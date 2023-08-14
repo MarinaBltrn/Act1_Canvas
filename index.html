@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACT CLASE 14/08/23</title>
+    <style>
+        canvas{
+            background-color: rgb(159, 250, 203);
+        }
+    </style>
+</head>
+</head>
+<body>
+    <canvas id="myCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById('myCanvas');
+        var ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = "orange";
+        ctx.fillRect(10,10,55,50);
+
+        ctx.fillStyle = "rgba(65,105,225, 85%)";
+        ctx.fillRect(30,30,55,50);
+
+        //ctx.strokeStyle = "orange";
+        ctx.beginPath();
+        ctx.moveTo(190,10);
+        ctx.lineTo(215,65);
+        ctx.lineTo(120,65);
+        //ctx.stroke();
+        ctx.fill(); //--> rellena con el ultimo color 
+        ctx.closePath(); //--> funciona como el fill
+
+        //Es importante cerrar los paths
+        ctx.beginPath();
+
+        ctx.strokeStyle = "red";
+        ctx.moveTo(215,65);
+        ctx.lineTo(250,120);
+        ctx.stroke();
+
+        ctx.closePath();
+
+        ctx.strokeStyle = "black";
+        ctx.fillStyle = "yellow";
+        ctx.beginPath();
+        ctx.arc(135,110,25,0,2*Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.closePath();
+
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        ctx.arc(200,110,25,0,2*Math.PI);
+        ctx.stroke();
+
+        ctx.closePath();
+        
+    </script>
+    
+</body>
+</html>
