@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACT CLASE 14/08/23</title>
+    <title>ACT CLASE 16/08/23</title>
     <style>
         canvas{
-            background-color: rgb(159, 250, 203);
+            background-color: rgb(198, 246, 252);
         }
     </style>
 </head>
 </head>
 <body>
-    <canvas id="myCanvas"></canvas>
+    <canvas width=500px height=500px id="myCanvas"></canvas>
+    <!-- QUEDÓ PENDIENTE EL RECURSO DE LA IMAGEN PARA MANDARLO A LLAMAR -->
     <script>
         var canvas = document.getElementById('myCanvas');
         var ctx = canvas.getContext('2d');
@@ -57,7 +58,14 @@
         ctx.stroke();
 
         ctx.closePath();
+
+        ctx.fillStyle = "pink";
+        ctx.font = "45px Arial"
+        ctx.fillText("Hola Mundo", 10,180);
         
+        ctx.strokeStyle = "Gray";
+        ctx.strokeText("Hola Mundo", 10,180);
+
     </script>
     
 </body>
