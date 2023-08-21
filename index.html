@@ -58,6 +58,12 @@
                 return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
             }
 
+            canvas.addEventListener('mousemove', (event) =>{
+                ctx.beginPath();
+                ctx.arc(event.layerX, event.layerY, 25, 0, 2 * Math.PI);
+                ctx.fillStyle=random_rgba();
+                ctx.fill();
+            })
 
 
 
