@@ -22,80 +22,92 @@
             var canvas = document.getElementById('myCanvas');
             var ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = "orange";
-            ctx.fillRect(10, 10, 55, 50);
 
-            ctx.fillStyle = "rgba(65,105,225, 85%)";
-            ctx.fillRect(30, 30, 55, 50);
+            canvas.addEventListener("click", (event) => {
+                console.log("hola");
+                console.log(event);
+                ctx.fillStyle = "red";
+                ctx.beginPath();
+                ctx.arc(event.layerX, event.layerY, 25, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+            })
 
-            //ctx.strokeStyle = "orange";
-            ctx.beginPath();
-            ctx.moveTo(190, 10);
-            ctx.lineTo(215, 65);
-            ctx.lineTo(120, 65);
-            //ctx.stroke();
-            ctx.fill(); //--> rellena con el ultimo color 
-            ctx.closePath(); //--> funciona como el fill
+            // ctx.fillStyle = "orange";
+            // ctx.fillRect(10, 10, 55, 50);
 
-            //Es importante cerrar los paths
-            ctx.beginPath();
+            // ctx.fillStyle = "rgba(65,105,225, 85%)";
+            // ctx.fillRect(30, 30, 55, 50);
 
-            ctx.strokeStyle = "red";
-            ctx.moveTo(215, 65);
-            ctx.lineTo(250, 120);
-            ctx.stroke();
+            // //ctx.strokeStyle = "orange";
+            // ctx.beginPath();
+            // ctx.moveTo(190, 10);
+            // ctx.lineTo(215, 65);
+            // ctx.lineTo(120, 65);
+            // //ctx.stroke();
+            // ctx.fill(); //--> rellena con el ultimo color 
+            // ctx.closePath(); //--> funciona como el fill
 
-            ctx.closePath();
+            // //Es importante cerrar los paths
+            // ctx.beginPath();
 
-            ctx.strokeStyle = "black";
-            ctx.fillStyle = "yellow";
-            ctx.beginPath();
-            ctx.arc(135, 110, 25, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.stroke();
+            // ctx.strokeStyle = "red";
+            // ctx.moveTo(215, 65);
+            // ctx.lineTo(250, 120);
+            // ctx.stroke();
 
-            ctx.closePath();
+            // ctx.closePath();
 
-            ctx.strokeStyle = "black";
-            ctx.beginPath();
-            ctx.arc(200, 110, 25, 0, 2 * Math.PI);
-            ctx.stroke();
+            // ctx.strokeStyle = "black";
+            // ctx.fillStyle = "yellow";
+            // ctx.beginPath();
+            // ctx.arc(135, 110, 25, 0, 2 * Math.PI);
+            // ctx.fill();
+            // ctx.stroke();
 
-            ctx.closePath();
+            // ctx.closePath();
 
-            ctx.fillStyle = "pink";
-            ctx.font = "45px Arial"
-            ctx.fillText("Hola Mundo", 10, 180);
+            // ctx.strokeStyle = "black";
+            // ctx.beginPath();
+            // ctx.arc(200, 110, 25, 0, 2 * Math.PI);
+            // ctx.stroke();
 
-            ctx.strokeStyle = "Gray";
-            ctx.strokeText("Hola Mundo", 10, 180);
+            // ctx.closePath();
 
-            var grd = ctx.createLinearGradient(0, 0, 0, 170);
-            grd.addColorStop(0, "red");
-            grd.addColorStop(1, "blue");
-            ctx.fillRect(270, 20, 200, 100);
-            ctx.fillStyle = grd;
-            ctx.fillRect(270, 20, 200, 100);
+            // ctx.fillStyle = "pink";
+            // ctx.font = "45px Arial"
+            // ctx.fillText("Hola Mundo", 10, 180);
 
-            // Aquí termina la actividad 7
+            // ctx.strokeStyle = "Gray";
+            // ctx.strokeText("Hola Mundo", 10, 180);
 
-            // Aquí empieza la actividad 8 PENDIENTE
-            var grd2 = ctx.createRadialGradient(370, 250, 100, 370, 290, 3);
-            grd2.addColorStop(0, "yellow");
-            grd2.addColorStop(0.25, "purple");
-            grd2.addColorStop(0.50, "blue");
-            grd2.addColorStop(0.75, "orange");
-            grd2.addColorStop(1, "pink");
-            ctx.fillStyle = grd2;
-            ctx.fillRect(270, 220, 200, 100);
+            // var grd = ctx.createLinearGradient(0, 0, 0, 170);
+            // grd.addColorStop(0, "red");
+            // grd.addColorStop(1, "blue");
+            // ctx.fillRect(270, 20, 200, 100);
+            // ctx.fillStyle = grd;
+            // ctx.fillRect(270, 20, 200, 100);
 
-            
-            //Aquí empieza la actividad 9
+            // // Aquí termina la actividad 7
 
-            var img = document.getElementById("img_mariana");
-            ctx.drawImage(img, 20, 220, 200, 200);
+            // // Aquí empieza la actividad 8 PENDIENTE
+            // var grd2 = ctx.createRadialGradient(370, 250, 100, 370, 290, 3);
+            // grd2.addColorStop(0, "yellow");
+            // grd2.addColorStop(0.25, "purple");
+            // grd2.addColorStop(0.50, "blue");
+            // grd2.addColorStop(0.75, "orange");
+            // grd2.addColorStop(1, "pink");
+            // ctx.fillStyle = grd2;
+            // ctx.fillRect(270, 220, 200, 100);
+
+
+            // //Aquí empieza la actividad 9
+
+            // var img = document.getElementById("img_mariana");
+            // ctx.drawImage(img, 20, 220, 200, 200);
 
         }
+
 
     </script>
 
