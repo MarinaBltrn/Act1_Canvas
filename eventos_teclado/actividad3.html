@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos de Teclado</title>
+
+    <style>
+        canvas{
+            background-color: gray;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <canvas width="500px" height="500px" id="my_canvas"></canvas>
+    </center>
+
+    <script>
+        var canvas = document.getElementById('my_canvas');
+        var ctx = canvas.getContext('2d');
+        var x = 225;
+        var y = 225;
+
+        document.addEventListener('keydown', (event) => {
+            console.log(event);
+
+            switch(event.keyCode){
+                case 87:
+                    y -= 10;
+                    break;
+                case 83:
+                    y += 10;
+                    break;
+                case 65:
+                    x -= 10;
+                    break;
+                case 68:
+                    x += 10;
+                    break;
+            }
+
+            ctx.fillStyle = random_rgba();
+           repaint();
+        })
+
+        function repaint(){
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0, 0, 500, 500);
+            ctx.fillStyle = random_rgba();
+            ctx.fillRect(x, y, 50, 50);
+            ctx.strokeRect(x, y, 50, 50);
+        }
+
+        function random_rgba(){
+            var o = Math.round, r = Math.random, s = 255;
+            return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+        }
+    </script>
+</body>
+</html>
