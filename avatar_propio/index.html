@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Preahvihear&display=swap" rel="stylesheet">
+    <title>Avatar con Formas</title>
+
+    <style>
+        canvas {
+            background-color: rgb(247, 228, 205);
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <canvas width="500px" height="500px" id="my_canvas"></canvas>
+        <img src="capibara.png" style="display: none;" width="100px" height="100px" id="capibara.png">
+    </center>
+
+    <script>
+        window.onload = () => {
+            var canvas = document.getElementById('my_canvas');
+            var ctx = canvas.getContext('2d');
+
+            // Fondo Circulo Café
+            ctx.beginPath();
+            ctx.fillStyle = "#915B28";
+            ctx.arc(250, 250, 200, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // CABEZA
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.roundRect(140, 120, 210, 190, [40, 40, 40, 40]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // CABELLO
+            // Patillas
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.roundRect(137, 190, 15, 50, [40, 40, 10, 20]);
+            ctx.roundRect(337, 190, 15, 50, [40, 40, 10, 20]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // Chonguito - AMBOS LADOS
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(140, 130, 80, 0, 2 * Math.PI);
+            ctx.arc(340, 130, 80, 1.5, 3 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // Cabellito enrollado - AMBOS LADOS
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(200, 82, 15, 0, 2 * Math.PI);
+            ctx.arc(174, 97, 15, 0, 2 * Math.PI);
+            ctx.arc(156, 120, 15, 0, 2 * Math.PI);
+            ctx.arc(144, 147, 15, 0, 2 * Math.PI);
+            ctx.arc(138, 176, 15, 0, 2 * Math.PI);
+            ctx.arc(140, 205, 15, 0, 2 * Math.PI);
+            ctx.arc(290, 82, 15, 1, 3 * Math.PI);
+            ctx.arc(315, 97, 15, 1, 3 * Math.PI);
+            ctx.arc(335, 120, 15, 3, 3 * Math.PI);
+            ctx.arc(347, 147, 15, 3, 3 * Math.PI);
+            ctx.arc(352, 176, 15, 3, 3 * Math.PI);
+            ctx.arc(350, 205, 15, 3, 3 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // Área central del cabello
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(245, 176, 102, 9.43, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(244, 200, 90, 9.43, 2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Área central de copete
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(245, 199, 100, 1, 2.3 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(245, 221, 87, 1, 2.3 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Copete - DER
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(292, 216, 50, 5.5, 2.41 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(338, 285, 35, 2.2, 1.40 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Forma al copete
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(238, 211, 90, 6, 2.25 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(347, 288, 36, 2.48, 1.31 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Copete - IZQ
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(195, 216, 50, 2.0, 1.2 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.arc(152, 285, 35, 5, 2.3 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Forma al copete
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(250, 209, 90, 2.6, 1.05 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(137, 288, 40, 5.28, 2.18 * Math.PI);
+            ctx.fill();
+            ctx.closePath();
+
+            // Ojo - AMBOS
+            ctx.beginPath()
+            ctx.moveTo(155, 200);
+            ctx.lineTo(208, 200);
+            ctx.moveTo(330, 200);
+            ctx.lineTo(279, 200);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = "#111111";
+            ctx.lineCap = 'round'
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.roundRect(167, 200, 35, 40, [0, 0, 100, 90]);
+            ctx.roundRect(286, 200, 35, 40, [0, 0, 100, 90]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // Ceja - AMBAS
+            ctx.beginPath()
+            ctx.moveTo(204, 187);
+            ctx.lineTo(190, 187);
+            ctx.moveTo(295, 187);
+            ctx.lineTo(281, 187);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#111111";
+            ctx.lineCap = 'round'
+            ctx.stroke();
+            ctx.closePath();
+
+            // Boca
+            ctx.beginPath();
+            ctx.moveTo(258, 260);
+            ctx.lineTo(248, 250);
+            ctx.lineTo(238, 260);
+            ctx.lineWidth = 6;
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(261, 264);
+            ctx.lineTo(248, 256);
+            ctx.lineTo(238, 262);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = "#FAEFDF";
+            ctx.stroke();
+            ctx.closePath();
+
+            // Lineas del cabello
+            ctx.beginPath();
+            ctx.moveTo(248, 132);
+            ctx.lineTo(248, 100);
+            ctx.moveTo(180, 122);
+            ctx.lineTo(208, 80);
+            ctx.moveTo(310, 124);
+            ctx.lineTo(284, 81);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "BLACK";
+            ctx.stroke();
+            ctx.closePath();
+
+            // CUERPO
+            // Bracitos        
+            ctx.beginPath();
+            ctx.fillStyle = "#FAEFDF";
+            ctx.arc(325, 440, 15, 0, 2 * Math.PI);
+            ctx.arc(165, 440, 15, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            // Manitas
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.roundRect(145, 330, 50, 110, [70, 20, 70, 10]);
+            ctx.roundRect(294, 330, 50, 110, [20, 70, 10, 70]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            //Pechito - Ropita
+            ctx.beginPath();
+            ctx.fillStyle = "#111111";
+            ctx.roundRect(170, 310, 150, 170, [70, 70, 20, 20]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            var img = document.getElementById("capibara.png");
+            ctx.drawImage(img, 205, 350, 75, 75);
+
+            // DETALLITOS
+            // Ruborcito
+            ctx.beginPath();
+            ctx.fillStyle = "rgba(226, 121, 128, 20%)";
+            ctx.roundRect(295, 250, 30, 8, [100, 100, 100, 100]);
+            ctx.roundRect(165, 250, 30, 8, [100, 100, 100, 100]);
+            ctx.fill();
+            ctx.closePath();
+
+            // Firma
+            ctx.beginPath();
+            ctx.fillStyle = "#915B28";
+            ctx.font = "22px Preahvihear";
+            ctx.fillText("Marina Beltran", 320, 485);
+            ctx.closePath();
+        }
+    </script>
+</body>
+</html>
