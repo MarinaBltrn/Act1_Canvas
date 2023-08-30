@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Preahvihear&display=swap" rel="stylesheet">
+    <title>Paisaje con Figuras</title>
+
+    <style>
+        canvas {
+            background-color: rgb(0, 0, 0);
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <canvas width="1024" height="800" id="my_canvas"></canvas>
+        <img src="capibara.png" style="display: none;" width="100px" height="100px" id="capibara.png">
+    </center>
+
+    <script>
+        window.onload = () => {
+            var canvas = document.getElementById('my_canvas');
+            var ctx = canvas.getContext('2d');
+
+
+            // Fondo
+            ctx.beginPath();
+            var grd = ctx.createLinearGradient(600, 0, 600, 750);
+            grd.addColorStop(0, "#1281AE");
+            grd.addColorStop(0.45, "#359AB6");
+            grd.addColorStop(0.60, "#60B9C1");
+            grd.addColorStop(0.80, "#7CCDC7");
+            grd.addColorStop(1, "#A0E8D4");
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 1024, 800);
+            ctx.closePath();
+
+            // Cielo
+                // Nubes Pt1
+            ctx.beginPath();
+            ctx.fillStyle = "#F7F7F7";
+            ctx.ellipse(80, 55, 50, 20, 0, 0, 2 * Math.PI, false);
+            ctx.ellipse(150, 55, 50, 20, 0, 0, 2 * Math.PI, false);
+            ctx.ellipse(115, 65, 100, 20, 0, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+
+                // Nubes Pt2
+            ctx.beginPath();
+            ctx.fillStyle = "#F7F7F7";
+            ctx.ellipse(465, 230, 100, 20, 0, 0, 2 * Math.PI, false);
+            ctx.ellipse(460, 250, 150, 20, 0, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+
+                // Nubes Pt3
+            ctx.beginPath();
+            ctx.fillStyle = "#F7F7F7";
+            ctx.ellipse(850, 100, 100, 30, 0, 1, 2 * Math.PI, false);
+            ctx.ellipse(950, 120, 100, 20, 0, 2.7, 2 * Math.PI, false);
+            ctx.ellipse(920, 140, 150, 20, 0, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+
+            // Pirámides (ATRÁS HACIA ADELANTE)
+            ctx.beginPath();
+            var grd2 = ctx.createLinearGradient(600, 0, 600, 750);
+            grd2.addColorStop(0, "#C9FFF6");
+            grd2.addColorStop(1, "#69D7CA");
+            ctx.fillStyle = grd2;
+            ctx.moveTo(100, 450);
+            ctx.lineTo(550, 800);
+            ctx.lineTo(-400, 800);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            var grd3 = ctx.createLinearGradient(600, 0, 600, 750);
+            grd3.addColorStop(0, "#D1FFFF");
+            grd3.addColorStop(1, "#45CCCF");
+            ctx.fillStyle = grd3;
+            ctx.moveTo(275, 400);
+            ctx.lineTo(800, 800);
+            ctx.lineTo(-250, 800);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            var grd4 = ctx.createLinearGradient(600, 0, 600, 750);
+            grd4.addColorStop(0, "#5FCBFF");
+            grd4.addColorStop(1, "#3E84A6");
+            ctx.fillStyle = grd4;
+            ctx.moveTo(550, 490);
+            ctx.lineTo(950, 800);
+            ctx.lineTo(150, 800);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            var grd5 = ctx.createLinearGradient(600, 0, 600, 750);
+            grd5.addColorStop(0, "#9CAAFF");
+            grd5.addColorStop(1, "#42486C");
+            ctx.fillStyle = grd5;
+            ctx.moveTo(430, 670);
+            ctx.lineTo(700, 800);
+            ctx.lineTo(260, 800);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            var grd6 = ctx.createLinearGradient(600, 0, 600, 750);
+            grd6.addColorStop(0, "#92B0FF");
+            grd6.addColorStop(1, "#445277");
+            ctx.fillStyle = grd6;
+            ctx.moveTo(430, 670);
+            ctx.lineTo(500, 800);
+            ctx.lineTo(260, 800);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#42486C";
+            ctx.moveTo(0, 580);
+            ctx.lineTo(550, 800);
+            ctx.lineTo(0, 800);
+            ctx.fill();
+            ctx.closePath();
+
+            // Árboles
+                // Troncos
+            ctx.beginPath();
+            ctx.moveTo(840, 690);
+            ctx.lineTo(840, 740);
+            ctx.moveTo(870, 670);
+            ctx.lineTo(870, 740);
+            ctx.moveTo(900, 700);
+            ctx.lineTo(900, 740);
+            ctx.moveTo(930, 620);
+            ctx.lineTo(930, 740);
+            ctx.moveTo(960, 650);
+            ctx.lineTo(960, 740);
+            ctx.moveTo(990, 720);
+            ctx.lineTo(990, 740);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#421F0B";
+            ctx.lineCap = 'round'
+            ctx.stroke();
+            ctx.closePath();
+
+                // Hojas
+            ctx.beginPath();
+            var grd7 = ctx.createLinearGradient(570, 0, 480, 750);
+            grd7.addColorStop(0.3, "#1DF2C6");
+            grd7.addColorStop(1, "#0C5573");
+            ctx.fillStyle = grd7;
+            ctx.roundRect(822, 660, 35, 50, [100, 100, 60, 60]);
+            ctx.roundRect(852, 640, 35, 50, [100, 100, 60, 60]);
+            ctx.roundRect(882, 665, 35, 50, [100, 100, 60, 60]);
+            ctx.roundRect(912, 585, 35, 50, [100, 100, 60, 60]);
+            ctx.roundRect(942, 615, 35, 50, [100, 100, 60, 60]);
+            ctx.roundRect(972, 685, 35, 50, [100, 100, 60, 60]);
+            ctx.fill();
+            ctx.closePath();
+                
+            // Suelo de los árboles
+
+                // Oscuro
+            ctx.beginPath();
+            var grd8 = ctx.createLinearGradient(800, 0, 400, 500);
+            grd8.addColorStop(0, "#56B6E6");
+            grd8.addColorStop(1, "#2B5B73");
+            ctx.fillStyle = grd8;
+            ctx.ellipse(850, 880, 150, 250, 1.4, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+
+                // Claro
+            ctx.beginPath();
+            var grd9 = ctx.createLinearGradient(800, 0, 400, 500);
+            grd9.addColorStop(0, "#56B6E6");
+            grd9.addColorStop(1, "#0E7871");
+            ctx.fillStyle = grd9;
+            ctx.ellipse(910, 870, 120, 220, 1.3, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+
+            // Bote y agua
+                // Agua
+            ctx.beginPath();
+            var grd10 = ctx.createLinearGradient(600, 10, 280, 250);
+            grd10.addColorStop(0, "#AEDBDE");
+            grd10.addColorStop(0.30, "#68A6C4");
+            grd10.addColorStop(0.60, "#AEDBDE");
+            grd10.addColorStop(1, "#68A6C4");
+            ctx.fillStyle = grd10;
+            ctx.fillRect(0, 780, 1024, 20);
+            ctx.fill();
+            ctx.closePath();
+
+                // Pescador
+            ctx.beginPath();
+            ctx.fillStyle = "#2A2E4A";
+            ctx.ellipse(335, 765, 10, 15, 0, 0, 2 * Math.PI, false);
+            ctx.ellipse(335, 745, 10, 10, 0, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.closePath();
+
+                // Bote
+            ctx.beginPath();
+            ctx.fillStyle = "#85451F";
+            ctx.roundRect(300, 765, 80, 15, [20, 20, 60, 60]);
+            ctx.roundRect(297, 765, 85, 5, [20, 20, 60, 60]);
+            ctx.fill();
+            ctx.closePath();
+
+                // Caña y borde del bote
+            ctx.beginPath()
+            ctx.moveTo(293, 765);
+            ctx.lineTo(385, 765);
+            ctx.moveTo(340, 765);
+            ctx.lineTo(375, 735);
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineCap = 'round'
+            ctx.stroke();
+            ctx.closePath();
+
+                //  Cuerda de la caña
+            ctx.beginPath()
+            ctx.moveTo(405, 785);
+            ctx.lineTo(375, 735);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.lineCap = 'round'
+            ctx.stroke();
+            ctx.closePath();
+            
+                // Sombra del barco
+            ctx.beginPath()
+            ctx.moveTo(303, 782);
+            ctx.lineTo(377, 782);
+            ctx.lineWidth = 4.5;
+            ctx.strokeStyle = "#3F749C";
+            ctx.lineCap = 'round'
+            ctx.stroke();
+            ctx.closePath();
+
+            // Firma
+            ctx.beginPath();
+            ctx.fillStyle = "#214660";
+            ctx.font = "20px Preahvihear";
+            ctx.fillText("Marina Beltran", 10, 797);
+            ctx.closePath();
+        }
+    </script>
+</body>
+
+</html>
