@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Preahvihear&display=swap" rel="stylesheet">
+    <title>Replica Mario Img</title>
+    <style>
+        canvas {
+            background-color: rgb(0, 0, 0);
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <canvas width="1280" height="720" id="my_canvas"></canvas>
+        <img src="mario_1.png" style="display: none;" width="100px" height="100px" id="mario">
+        <img src="planta_mario_venus.png" style="display: none;" width="100px" height="100px" id="planta">
+        <img src="arbusto chiquito.png" style="display: none;" width="100px" height="100px" id="arbusto">
+    </center>
+
+    <script>
+        window.onload = () => {
+            var canvas = document.getElementById('my_canvas');
+            var ctx = canvas.getContext('2d');
+            // Fondo
+            ctx.beginPath();
+            ctx.fillStyle = "#B3EEFE";
+            ctx.fillRect(0, 0, 1280, 720);
+            ctx.closePath();
+
+            // Suelo
+            ctx.beginPath();
+            ctx.fillStyle = "#FAC8BA";
+            ctx.fillRect(0, 550, 1280, 170);
+            ctx.closePath();
+
+                // Suelo - patron inferior
+            let aumento_sup = -90;
+            let aumento_inf = 50;
+            for (let i = 0; i <= 55; i++) {
+                ctx.moveTo(aumento_sup, 555);
+                ctx.lineTo(aumento_inf, 725);
+                ctx.lineWidth = 15;
+                ctx.strokeStyle = "#E4936E";
+                ctx.stroke();
+                ctx.closePath();
+                i++;
+                aumento_sup += 50;
+                aumento_inf += 50;
+            }
+
+            ctx.beginPath();
+            ctx.lineWidth = 2;
+            ctx.fillStyle = "#FAC8BA";
+            ctx.strokeStyle = "#000000";
+            ctx.fillRect(0, 550, 1280, 30);
+            ctx.strokeRect(-1, 550, 1282, 30);
+            ctx.closePath();
+            
+            // Arbustito
+            var img_arbustito = document.getElementById("arbusto");
+            ctx.drawImage(img_arbustito, 5, 450, 100, 110);
+
+            // Cuadros de Puntos
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "#FF9062";
+            ctx.strokeStyle = "#000000";
+            ctx.fillRect(30, 250, 70, 70);
+            ctx.fillRect(180, 60, 70, 70);
+            ctx.fillRect(250, 60, 70, 70);
+            ctx.fillRect(1150, 125, 70, 70);
+            ctx.strokeRect(30, 250, 70, 70);
+            ctx.strokeRect(180, 60, 70, 70);
+            ctx.strokeRect(250, 60, 70, 70);
+            ctx.strokeRect(1150, 125, 70, 70);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#000000";
+                // Esquinas izquierdas - arriba
+            ctx.fillRect(35, 255, 7, 7);
+            ctx.fillRect(185, 65, 7, 7);
+            ctx.fillRect(255, 65, 7, 7);
+            ctx.fillRect(1155, 130, 7, 7);
+                // Esquinas derechas - arriba
+            ctx.fillRect(87, 255, 7, 7);
+            ctx.fillRect(237, 65, 7, 7);
+            ctx.fillRect(307, 65, 7, 7);
+            ctx.fillRect(1207, 130, 7, 7);
+                // Esquinas izquierda - abajo
+            ctx.fillRect(35, 307, 7, 7);
+            ctx.fillRect(185, 117, 7, 7);
+            ctx.fillRect(255, 117, 7, 7);
+            ctx.fillRect(1155, 183, 7, 7);
+                // Esquinas derecha - abajo
+            ctx.fillRect(87, 307, 7, 7);
+            ctx.fillRect(237, 117, 7, 7);
+            ctx.fillRect(307, 117, 7, 7);
+            ctx.fillRect(1207, 183, 7, 7);
+            ctx.closePath();
+
+            // Plataformas
+                // Azul
+                // Sombra negra - Atrás de azúl
+            ctx.beginPath();
+            ctx.fillStyle = "#000000";
+            ctx.roundRect(540, 250, 100, 300, [0, 10, 0, 0]);
+            ctx.fill();
+            ctx.closePath();
+                // Sombra Azul
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "#198EDF";
+            ctx.strokeStyle = "#000000";
+            ctx.roundRect(410, 200, 205, 350, [10, 10, 10, 10]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+                // Color Azul principal
+            ctx.beginPath();
+            ctx.fillStyle = "#84C0FF";
+            ctx.roundRect(410, 200, 195, 340, [10, 10, 10, 10]);
+            ctx.fill();
+            ctx.closePath();
+
+                // Crema
+                // Sombra negra - Atrás de crema
+            ctx.beginPath();
+            ctx.fillStyle = "#000000";
+            ctx.roundRect(415, 370, 100, 180, [0, 10, 0, 0]);
+            ctx.fill();
+            ctx.closePath();
+                // Sombra Crema
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "#F0966B";
+            ctx.strokeStyle = "#000000";
+            ctx.roundRect(265, 330, 220, 220, [10, 10, 10, 10]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+                // Color Crema principal
+            ctx.beginPath();
+            ctx.fillStyle = "#FEC4B8";
+            ctx.roundRect(266, 332, 205, 205, [10, 30, 30, 10]);
+            ctx.fill();
+            ctx.closePath();
+
+                // Verde
+                // Sombra verde
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.fillStyle = "#2C672D";
+            ctx.strokeStyle = "#000000";
+            ctx.roundRect(1080, 330, 210, 220, [10, 10, 10, 10]);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+                // Color verde principal
+            ctx.beginPath();
+            ctx.fillStyle = "#51D96B";
+            ctx.roundRect(1082, 332, 210, 210, [10, 0, 0, 10]);
+            ctx.fill();
+            ctx.closePath();
+
+            // Tornillos (Sombra)
+            ctx.beginPath();
+            ctx.fillStyle = "#000000";
+                // Plataforma Crema (Sentido del reloj)
+            ctx.fillRect(270, 340, 35, 25);
+            ctx.fillRect(275, 337, 25, 32);
+            ctx.fillRect(445, 340, 35, 25);
+            ctx.fillRect(448, 337, 25, 32);
+            ctx.fillRect(445, 510, 37, 25);
+            ctx.fillRect(449, 503, 25, 35);
+            ctx.fillRect(268, 510, 36, 25);
+            ctx.fillRect(275, 503, 25, 35);
+                // Plataforma Azul (Sentido del reloj)
+            ctx.fillRect(413, 210, 35, 25);
+            ctx.fillRect(417, 207, 25, 35);
+            ctx.fillRect(570, 210, 35, 25);
+            ctx.fillRect(577, 207, 25, 35);
+            ctx.fillRect(570, 512, 35, 25);
+            ctx.fillRect(577, 505, 25, 35);
+                // Plataforma Verde (Sentido del reloj)
+            ctx.fillRect(1085, 340, 35, 25);
+            ctx.fillRect(1090, 337, 25, 32);
+            ctx.fillRect(1085, 510, 36, 25);
+            ctx.fillRect(1090, 503, 25, 35);
+            ctx.fill();
+            ctx.closePath();
+
+                // Color de los tornillos
+            ctx.beginPath();
+            ctx.fillStyle = "#C7D2D6";
+                // Plataforma Crema (Sentido del reloj)
+            ctx.fillRect(275, 347, 25, 10);
+            ctx.fillRect(280, 340, 15, 25);
+            ctx.fillRect(450, 348, 25, 10);
+            ctx.fillRect(453, 340, 15, 25);
+            ctx.arc(287, 521, 13, 0, 2 * Math.PI);
+            ctx.arc(462, 521, 13, 0, 2 * Math.PI);
+                // Plataforma Azul (Sentido del reloj)
+            ctx.fillRect(425, 210, 10, 24);
+            ctx.fillRect(417, 214, 25, 15);
+            ctx.fillRect(581, 210, 18, 23);
+            ctx.fillRect(577, 214, 25, 15);
+            ctx.fillRect(581, 512, 18, 23);
+            ctx.fillRect(577, 518, 25, 15);
+                // Plataforma Verde (Sentido del reloj)
+            ctx.fillRect(1090, 347, 25, 10);
+            ctx.fillRect(1097, 340, 10, 25);
+            ctx.fillRect(1090, 514, 25, 15);
+            ctx.fillRect(1097, 509, 10, 25);
+            ctx.fill();
+            ctx.closePath();
+
+            // División de los tornillos
+            ctx.beginPath();
+            ctx.moveTo(295, 346);
+            ctx.lineTo(280, 358);
+            ctx.moveTo(470, 346);
+            ctx.lineTo(452, 360);
+            ctx.moveTo(300, 510);
+            ctx.lineTo(278, 530);
+            ctx.moveTo(472, 513);
+            ctx.lineTo(453, 530);
+            ctx.moveTo(440, 212);
+            ctx.lineTo(423, 230);
+            ctx.moveTo(600, 212);
+            ctx.lineTo(580, 230);
+            ctx.moveTo(1110, 345);
+            ctx.lineTo(1095, 358);
+            ctx.moveTo(1110, 512);
+            ctx.lineTo(1095, 530);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#000000";
+            ctx.stroke();
+            ctx.closePath();
+
+            // Planta
+            var img_planta = document.getElementById("planta");
+            ctx.drawImage(img_planta, 810, 165, 180, 160);
+
+            //Tubería
+                // Base
+            ctx.beginPath();
+            ctx.lineWidth = 2.5;
+            ctx.fillStyle = "#1C8802";
+            ctx.strokeStyle = "#000000";
+            ctx.fillRect(820, 350, 160, 200);
+            ctx.strokeRect(820, 350, 160, 200);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+                // Cabeza
+            ctx.beginPath();
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(805, 320, 185, 80);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#1C8802";
+            ctx.fillRect(812, 324, 175, 68);
+            ctx.fill();
+            ctx.closePath();
+                //Reflejos de luz - superior
+            ctx.beginPath();
+            ctx.fillStyle = "#5DD272";
+            ctx.fillRect(820, 325, 7, 66);
+            ctx.fillRect(830, 325, 18, 66);
+            ctx.fillRect(860, 325, 3, 66);
+            ctx.fillRect(920, 325, 6, 66);
+            ctx.fillRect(940, 325, 2, 66);
+            ctx.fillRect(946, 325, 8, 66);
+            ctx.fillRect(971, 325, 4, 66);
+                //Reflejos de luz - inferior
+            ctx.fillRect(827, 401, 2, 148);
+            ctx.fillRect(834, 401, 18, 148);
+            ctx.fillRect(864, 401, 3, 148);
+            ctx.fillRect(910, 401, 13, 148);
+            ctx.fillRect(930, 401, 8, 148);
+            ctx.fillRect(942, 401, 3, 148);
+            ctx.fillRect(965, 401, 4, 148);
+            ctx.fill();
+            ctx.closePath();
+                // Sombras - superior
+            ctx.beginPath();
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(928, 325, 9, 67);
+            ctx.fillRect(943, 325, 1.5, 67);
+            ctx.fillRect(956, 325, 15, 67);
+            ctx.fillRect(977, 325, 9, 67);
+                //Sombras - inferior
+            ctx.fillRect(924, 400, 5, 150);
+            ctx.fillRect(936, 400, 5, 150);
+            ctx.fillRect(942, 400, 22, 150);
+            ctx.fillRect(970, 401, 10, 148);
+            ctx.fill();
+            ctx.closePath();
+
+            // Bola de fuego
+            ctx.beginPath();
+            ctx.fillStyle = "#D94F1F";
+            ctx.fillRect(700, 325, 37, 15);
+            ctx.fillRect(707, 332, 35, 15);
+            ctx.fillRect(710, 321, 22, 10);
+            ctx.fillRect(717, 345, 22, 10);
+            ctx.fillRect(710, 353, 22, 10);
+            ctx.fillRect(706, 350, 5, 5);
+            ctx.fillRect(706, 363, 5, 5);
+            ctx.fillRect(698, 355, 8, 8);
+            ctx.fillRect(692, 350, 5, 5);
+            ctx.fillRect(690, 347, 3, 3);
+            ctx.fill();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(715, 325, 17, 15);
+            ctx.fillRect(708, 333, 29, 7);
+            ctx.fillRect(718, 333, 19, 15);
+            ctx.fillRect(727, 348, 5, 5);
+            ctx.fill();
+            ctx.closePath();
+
+            var img_mario = document.getElementById("mario");
+            ctx.drawImage(img_mario, 570, 420, 80, 130);
+
+            // Firma
+            ctx.beginPath();
+            ctx.fillStyle = "#915B28";
+            ctx.font = "22px Preahvihear";
+            ctx.fillText("Marina Beltran", 10, 575);
+            ctx.closePath();
+        }
+    </script>
+</body>
+</html>
