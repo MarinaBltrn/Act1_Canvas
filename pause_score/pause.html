@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colisiones</title>
+    <title>Implementación de Pause</title>
 
     <style>
         canvas {
-            background-color: gray;
+            background-color: "white";
         }
     </style>
 </head>
@@ -21,6 +22,7 @@
         var ctx = canvas.getContext('2d');
         var dir = 0;
         var speed = 5;
+        var pause = false;
         let walls = [];
 
         // Clase para crear y pintar objetos.
@@ -51,85 +53,90 @@
 
         const player = new rectangulo(225, 225, 50, 50, random_rgba());
         const target = new rectangulo(420, 380, 30, 30, "black");
-        walls.push(new rectangulo(100, 50, 300, 25,"#0092A0"));
+        walls.push(new rectangulo(100, 50, 300, 25, "#0092A0"));
         walls.push(new rectangulo(50, 200, 25, 100, "#0092A0"));
         walls.push(new rectangulo(50, 200, 100, 25, "#0092A0"));
         walls.push(new rectangulo(310, 280, 150, 25, "#0092A0"));
-        walls.push(new rectangulo(100, 400, 300, 25,"#0092A0"));
+        walls.push(new rectangulo(100, 400, 300, 25, "#0092A0"));
 
         document.addEventListener('keydown', (event) => {
             console.log(event);
 
             switch (event.keyCode) {
                 case 87:
-                    dir = event.keyCode;
+                    if (!pause) dir = event.keyCode;
                     //y -= 10;
                     break;
                 case 83:
-                    dir = event.keyCode;
+                    if (!pause) dir = event.keyCode;
                     //y += 10;
                     break;
                 case 65:
-                    dir = event.keyCode;
+                    if (!pause) dir = event.keyCode;
                     //x -= 10;
                     break;
                 case 68:
-                    dir = event.keyCode;
+                    if (!pause) dir = event.keyCode;
                     //x += 10;
+                    break;
+                case 32:
+                    pause = !pause;
                     break;
             }
             //update();
         })
 
         function update() {
-            switch (dir) {
-                case 87:
-                    player.y -= speed;
-                    if (player.y < -50){ 
-                        player.y = 550;
-                    }
-                    break;
-                case 83:
-                    player.y += speed;
-                    if (player.y > 550){
-                        player.y = -50;
-                    }
-                    break;
-                case 65:
-                    player.x -= speed;
-                    if (player.x < -50){
-                        player.x = 550;
-                    }
-                    break;
-                case 68:
-                    player.x += speed;
-                    if (player.x > 550){
-                        player.x = -50;
-                    }
-                    break;
-            }
-            //Aumenta la velocidad al tocar el target.
-            if (player.seTocan(target)) {
-                target.x = Math.random() * (450);
-                target.y = Math.random() * (450);
-                speed += 1;
-            }
-            // Topa con la colisión de la pared.
-            for (var i = walls.length - 1; i >= 0; i--) {
-                if(player.seTocan(walls[i])) {
-                    switch (dir) {
-                        case 87:
-                            player.y += speed;
+            if (!pause) {
+                switch (dir) {
+                    case 87:
+                        player.y -= speed;
+                        if (player.y < -50) {
+                            player.y = 550;
+                        }
                         break;
-                        case 83:
-                            player.y -= speed;
+                    case 83:
+                        player.y += speed;
+                        if (player.y > 550) {
+                            player.y = -50;
+                        }
                         break;
-                        case 65:
-                            player.x += speed;
+                    case 65:
+                        player.x -= speed;
+                        if (player.x < -50) {
+                            player.x = 550;
+                        }
                         break;
-                        case 68:
-                            player.x -= speed;
+                    case 68:
+                        player.x += speed;
+                        if (player.x > 550) {
+                            player.x = -50;
+                        }
                         break;
+                }
+                //Aumenta la velocidad al tocar el target.
+                if (player.seTocan(target)) {
+                    target.x = Math.random() * (450);
+                    target.y = Math.random() * (450);
+                    speed += 1;
+                }
+                // Topa con la colisión de la pared.
+                for (var i = walls.length - 1; i >= 0; i--) {
+                    if (player.seTocan(walls[i])) {
+                        switch (dir) {
+                            case 87:
+                                player.y += speed;
+                                break;
+                            case 83:
+                                player.y -= speed;
+                                break;
+                            case 65:
+                                player.x += speed;
+                                break;
+                            case 68:
+                                player.x -= speed;
+                                break;
+                        }
                     }
                 }
             }
@@ -141,14 +148,24 @@
         //repaint();
 
         function repaint() {
-            ctx.fillStyle = "gray";
-            ctx.fillRect(0, 0, 500, 500);
-            player.color = random_rgba();
-            player.pintarRectangulo(ctx);
-            target.pintarRectangulo(ctx);
-            for (var i = walls.length - 1; i >= 0; i--) {
-                walls[i].pintarRectangulo(ctx);
+            if (!pause) {
+                ctx.fillStyle = "rgb(213, 240, 163)";
+                ctx.fillRect(0, 0, 500, 500);
+                player.color = random_rgba();
+                player.pintarRectangulo(ctx);
+                target.pintarRectangulo(ctx);
+                for (var i = walls.length - 1; i >= 0; i--) {
+                    walls[i].pintarRectangulo(ctx);
+                }
+            }else{
+                ctx.fillStyle = "rgba(154, 160, 154, 0.025)";
+                ctx.fillRect (0, 0, 500, 500);
+
+                ctx.fillStyle = "black";
+                ctx.font = "30px Verdana"
+                ctx.fillText("P A U S E", 190, 240);
             }
+
         }
 
         function random_rgba() {
@@ -169,4 +186,5 @@
 
     </script>
 </body>
+
 </html>
