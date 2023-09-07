@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Preahvihear&display=swap" rel="stylesheet">
+    <title>Replica Sonik Img</title>
+    <style>
+        canvas {
+            background-color: rgb(0, 0, 0);
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <canvas width="1280" height="720" id="my_canvas"></canvas>
+        <img src="mario_1.png" style="display: none;" width="100px" height="100px" id="mario">
+        <img src="planta_mario_venus.png" style="display: none;" width="100px" height="100px" id="planta">
+        <img src="arbusto chiquito.png" style="display: none;" width="100px" height="100px" id="arbusto">
+    </center>
+
+    <script>
+        window.onload = () => {
+            var canvas = document.getElementById('my_canvas');
+            var ctx = canvas.getContext('2d');
+            // Fondo
+            ctx.beginPath();
+            ctx.fillStyle = "#2000BD";
+            ctx.fillRect(0, 0, 1280, 720);
+            ctx.closePath();
+
+
+            // Suelo - patron inferior
+            let aumento_h = 0;
+            let aumento_v = 500;
+            for (let i = 0; i < 26; i++) {
+                if (i % 2 === 0) {
+                    ctx.beginPath();
+                    ctx.fillStyle = "#DE6A00";
+                    ctx.fillRect(aumento_h, aumento_v, 50, 50);
+                    ctx.fill();
+                    ctx.closePath();
+                    aumento_h += 50;
+                } else {
+                    ctx.beginPath();
+                    ctx.fillStyle = "#6A2000";
+                    ctx.fillRect(aumento_h, aumento_v, 50, 50);
+                    ctx.fill();
+                    ctx.closePath();
+                    aumento_h += 50;
+                }
+            }
+
+
+        }
+    </script>
+</body>
+
+</html>
