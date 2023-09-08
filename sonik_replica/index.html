@@ -31,7 +31,7 @@
             ctx.closePath();
 
 
-            // Suelo - patron inferior
+            // Suelo - patron 
             let aumento_h = 0;
             let aumento_v = 550;
 
@@ -70,6 +70,38 @@
                         break;
                 }
                 aumento_v += 50;
+            }
+
+            // Suelo - colores sup
+            let aum_v = 480;
+            function sueloColor(x, y, w, h, color) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.color = color;
+
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+            }
+            for (let y = 0; y <= 4; y++) {
+                for (let x = 0; x <= 1; x++) {
+                    switch (y) {
+                        case 0:
+                            sueloColor(0, aum_v, 1280, 35, "#80E000")
+                            break;
+                        case 1:
+                            sueloColor(0, aum_v, 1280, 35, "#40A000")
+                            break;
+                        case 2:
+                            sueloColor(0, aum_v, 1280, 35, "#006000")
+                            break;
+                        case 3:
+                            sueloColor(0, aum_v, 1280, 35, "rgba( 0, 0, 0, 30%)")
+                            break;
+                    }
+                }
+                aum_v += 35;
             }
         }
     </script>
