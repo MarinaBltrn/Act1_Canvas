@@ -103,6 +103,27 @@
                 }
                 aum_v += 35;
             }
+
+            // Monedas
+            let aum_h = 180;
+            function monedasSonik(x, y, w, h, color) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.color = color;
+
+                ctx.strokeStyle = "#EBE80E";
+                ctx.lineWidth = 6;
+                ctx.arc(this.x, this.y, this.w, this.h, 2 * Math.PI);
+                ctx.stroke();
+            }
+
+            for (let x = 0; x <= 2; x++) {
+                monedasSonik(aum_h , 420, 35, 0, 2 * Math.PI)
+                aum_h += 170;
+                ctx.beginPath();
+            }
         }
     </script>
 </body>
