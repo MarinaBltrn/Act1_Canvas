@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementa v-model y realiza una suma de dos números con los métodos de vue</title>
+    <style>
+        body {
+            background-color: #E5DBF5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container_app_vue">
+        <h1> Hola {{ name }}</h1>
+
+        <input type="text" v-model="name" name="">
+
+        <br><br>
+
+        <button @click="count++">
+            Count is: {{ count }}
+        </button>
+
+        <br><br>
+
+        <input type="" v-model="numero1" name="">
+        <input type="" v-model="numero2" name="">
+
+        <button @click="result=((+numero1)+(+numero2))">
+            Suma
+        </button>
+
+        <h3>Resultado <span v-if="result!=0"> {{ result }}</span> </h3>
+
+        <hr>
+        
+        <ul>
+            <li v-for="item in persons">
+                {{item.name}} - {{item.lastname}}
+            </li>
+        </ul>
+        <form>
+            <fieldset>
+                <legend>
+                    Nombre(s):
+                </legend>
+                <input type="text" v-model="username" name="">
+            </fieldset>
+            <fieldset>
+                <legend>
+                    Apellido(s):
+                </legend>
+                <input type="text" v-model="lastname" name="">
+            </fieldset>
+            <button type="button" v-on:click="addPerson()">
+                Save Data
+            </button>
+        </form>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const message = "";
+                const name = "";
+                const numero1 = 0;
+                const numero2 = 0;
+                const result = 0;
+                const username = ref(''), lastname = ref('');
+                const persons = ref([]);
+                return {
+                    name: ref(''),
+                    count: ref(0),
+                    numero1: ref(0),
+                    numero2: ref(0),
+                    result: ref(0),
+                    username,
+                    lastname,
+                    persons
+                }
+            },
+
+            methods: {
+                addPerson() {
+                    const person = { 
+                        name: this.username, 
+                        lastname: this.lastname 
+                    }
+
+                    this.persons.push(person);
+                    console.log(this.username);
+                    console.log(this.lastname);
+                }
+            }
+        }).mount('#container_app_vue')
+    </script>
+</body>
+
+</html>
