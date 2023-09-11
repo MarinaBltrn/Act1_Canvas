@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubblerman</title>
+
+    <style>
+        canvas {
+            background-color: black;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <canvas width="1500" height="1500px" id="my_canvas"></canvas>
+    </center>
+    <script>
+        var canvas = document.getElementById('my_canvas');
+        var ctx = canvas.getContext('2d');
+        var dir = 0;
+        var speed = 7;
+        var pause = false;
+        let walls = [];
+        let suelo_fondo = [];
+        let score = 0;
+
+        let image = new Image();
+        image.src = "player_reposo.png";
+
+        /*let image2 = new Image();
+        image2.src = "hueso.png";
+
+        let audio = new Audio();
+        audio.src = "mordisco.mp3";*/
+        
+        
+        // Clase para crear y pintar objetos.
+        class rectangulo {
+            constructor(x, y, w, h, color) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.color = color;
+            }
+            pintarRectangulo(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+                ctx.strokeRect(this.x, this.y, this.w, this.h);
+            }
+            // Verificar si chocan los objetos.
+            seTocan(target) {
+                if (this.x < target.x + target.w &&
+                    this.x + this.w > target.x &&
+                    this.y < target.y + target.h &&
+                    this.y + this.h > target.y) {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        const player = new rectangulo(110, 110, 64, 64, random_rgba());
+        const target = new rectangulo(420, 380, 40, 40, "black"); // huesoooo
+
+        let aum_lateral = 0;
+        let aum_inferior = 1400;
+        let aum_superior = 0;
+        for (let x = 0; x <= 30; x++) {
+            walls.push(new rectangulo(aum_lateral, aum_superior, 100, 100, "#0092A0"));
+            walls.push(new rectangulo(aum_lateral, aum_inferior, 100, 100, "#0092A0"));
+            aum_lateral += 100;
+            x++;
+        }
+
+        let aum_izq = 0;
+        let aum_der = 1400;
+        let aum_vertical = 0;
+        for (let y = 0; y <= 28; y++) {
+            walls.push(new rectangulo(aum_izq, aum_vertical, 100, 100, "#0092A0"));
+            walls.push(new rectangulo(aum_der, aum_vertical, 100, 100, "#0092A0"));
+            aum_vertical += 100;
+            y++;
+        }
+
+        let map_lateral = 200;
+        let map_vertical = 200;
+
+        for (let i = 0; i <= 5; i++) {
+            for (let j = 0; j <= 5; j++) {
+                if (j % 2 == 0) {
+                    walls.push(new rectangulo(map_lateral, map_vertical, 100, 100, "#0092A0"));
+                    map_lateral += 200;
+                } else {
+                    walls.push(new rectangulo(map_lateral, map_vertical, 100, 100, "#0092A0"));
+                    map_lateral += 200;
+                }
+            }
+            switch (i) {
+                case 0:
+                    map_vertical = 200;
+                    break;
+                case 1:
+                    map_vertical = 400;
+                    break;
+                case 2:
+                    map_vertical = 600;
+                    break;
+                case 3:
+                    map_vertical = 800;
+                    break;
+                case 4:
+                    map_vertical = 1000;
+                    break;
+            }
+            map_lateral = 200;
+            map_vertical += 200;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            console.log(event);
+
+            switch (event.keyCode) {
+                case 87:
+                    if (!pause) dir = event.keyCode;
+                    //y -= 10;
+                    break;
+                case 83:
+                    if (!pause) dir = event.keyCode;
+                    //y += 10;
+                    break;
+                case 65:
+                    if (!pause) dir = event.keyCode;
+                    //x -= 10;
+                    break;
+                case 68:
+                    if (!pause) dir = event.keyCode;
+                    //x += 10;
+                    break;
+                case 32:
+                    pause = !pause;
+                    break;
+            }
+        })
+
+        function update() {
+            if (!pause) {
+                switch (dir) {
+                    case 87:
+                        player.y -= speed;
+                        if (player.y < -50) {
+                            player.y = 1480;
+                        }
+                        break;
+                    case 83:
+                        player.y += speed;
+                        if (player.y > 1480) {
+                            player.y = -50;
+                        }
+                        break;
+                    case 65:
+                        player.x -= speed;
+                        if (player.x < -50) {
+                            player.x = 1480;
+                        }
+                        break;
+                    case 68:
+                        player.x += speed;
+                        if (player.x > 1480) {
+                            player.x = -50;
+                        }
+                        break;
+                }
+                //Aumenta la velocidad al tocar el target.
+                if (player.seTocan(target)) {
+                    target.x = Math.random() * (450);
+                    target.y = Math.random() * (450);
+                    //speed += 0.5;
+                    score += 10;
+                    //audio.play();
+                }
+                // Topa con la colisión de la pared.
+                for (var i = walls.length - 1; i >= 0; i--) {
+                    if (player.seTocan(walls[i])) {
+                        switch (dir) {
+                            case 87:
+                                player.y += speed;
+                                break;
+                            case 83:
+                                player.y -= speed;
+                                break;
+                            case 65:
+                                player.x += speed;
+                                break;
+                            case 68:
+                                player.x -= speed;
+                                break;
+                        }
+                        dir = 0;
+                    }
+                }
+            }
+            repaint();
+            window.requestAnimationFrame(update);
+        }
+
+        //ctx.fillStyle = random_rgba();
+        //repaint();
+
+        function repaint() {
+            if (!pause) {
+                ctx.fillStyle = "black";
+                ctx.fillRect(0, 0, 1500, 1500);
+                /*
+                ctx.font = "20px Verdana";
+                ctx.fillStyle = "black";
+                ctx.fillText("SCORE: " + score, 25, 25);*/
+
+                //player.color = random_rgba();
+                player.pintarRectangulo(ctx);
+                ctx.drawImage(image, player.x, player.y, 64, 64);
+
+                //starget.pintarRectangulo(ctx);
+                //ctx.drawImage(image2, target.x, target.y, 40, 40);
+
+                for (var i = walls.length - 1; i >= 0; i--) {
+                    walls[i].pintarRectangulo(ctx);
+                }
+            } else {
+                /*ctx.fillStyle = "rgba(154, 160, 154, 0.025)";
+                ctx.fillRect(0, 0, 500, 500);
+                
+                ctx.fillStyle = "black";
+                ctx.font = "30px Verdana";
+                ctx.fillText("P A U S E", 190, 240);*/
+            }
+
+        }
+
+        function random_rgba() {
+            var o = Math.round, r = Math.random, s = 255;
+            return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
+        }
+
+        window.requestAnimationFrame = (function () {
+            return window.requestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.mozRequestAnimationFrame ||
+                function (callback) {
+                    window.setTimeout(callback, 17);
+                };
+        }());
+
+        window.requestAnimationFrame(update);
+
+    </script>
+</body>
+
+</html>
