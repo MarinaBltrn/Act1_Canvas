@@ -30,10 +30,10 @@
         let image = new Image();
         image.src = "player_reposo.png";
 
-        /*let image2 = new Image();
-        image2.src = "hueso.png";
+        let image2 = new Image();
+        image2.src = "player_arriba.gif";
 
-        let audio = new Audio();
+        /*let audio = new Audio();
         audio.src = "mordisco.mp3";*/
         
         
@@ -221,6 +221,7 @@
 
                 //player.color = random_rgba();
                 player.pintarRectangulo(ctx);
+                
                 ctx.drawImage(image, player.x, player.y, 64, 64);
 
                 //starget.pintarRectangulo(ctx);
