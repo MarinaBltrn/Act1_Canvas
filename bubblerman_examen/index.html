@@ -24,14 +24,29 @@
         var speed = 7;
         var pause = false;
         let walls = [];
-        let suelo_fondo = [];
+        var tecla_presionada = {
+            w: false,
+            s: false,
+            a: false,
+            d: false
+        };
         let score = 0;
+        let dir_player = "reposo";
 
         let image = new Image();
-        image.src = "player_reposo.png";
+        image.src = "player_reposo-copia.png";
 
         let image2 = new Image();
-        image2.src = "arriba/p_arriba-1.png";
+        image2.src = "arriba/p_arriba-copia.png";
+
+        let image3 = new Image();
+        image3.src = "abajo/p_abajo-copia.png";
+
+        let image4 = new Image();
+        image4.src = "derecha/p_der-copia.png";
+
+        let image5 = new Image();
+        image5.src = "izquierda/p_izq-copia.png";
 
         /*let audio = new Audio();
         audio.src = "mordisco.mp3";*/
@@ -125,55 +140,83 @@
 
             switch (event.keyCode) {
                 case 87:
-                    if (!pause) dir = event.keyCode;
+                    if (!pause) {
+                        dir = event.keyCode;
+                        dir_player = "arriba";
+                        tecla_presionada.w = true;
+                    }
                     //y -= 10;
                     break;
                 case 83:
-                    if (!pause) dir = event.keyCode;
+                    if (!pause) {
+                        dir = event.keyCode;
+                        dir_player = "abajo";
+                        tecla_presionada.s = true;
+                    }
                     //y += 10;
                     break;
                 case 65:
-                    if (!pause) dir = event.keyCode;
+                    if (!pause) {
+                        dir = event.keyCode;
+                        dir_player = "izquierda";
+                        tecla_presionada.a = true;
+                    }
                     //x -= 10;
                     break;
                 case 68:
-                    if (!pause) dir = event.keyCode;
+                    if (!pause) {
+                        dir = event.keyCode;
+                        dir_player = "derecha";
+                        tecla_presionada.d = true;
+                    }
                     //x += 10;
                     break;
                 case 32:
                     pause = !pause;
                     break;
             }
-        })
+        });
+        document.addEventListener('keyup', (event) => {
+            switch (event.keyCode) {
+                case 87:
+                    tecla_presionada.w = false;
+                    break;
+                case 83:
+                    tecla_presionada.s = false;
+                    break;
+                case 65:
+                    tecla_presionada.a = false;
+                    break;
+                case 68:
+                    tecla_presionada.d = false;
+                    break;
+            }
+        });
 
         function update() {
             if (!pause) {
-                switch (dir) {
-                    case 87:
-                        player.y -= speed;
-                        if (player.y < -50) {
-                            player.y = 1480;
-                        }
-                        break;
-                    case 83:
-                        player.y += speed;
-                        if (player.y > 1480) {
-                            player.y = -50;
-                        }
-                        break;
-                    case 65:
-                        player.x -= speed;
-                        if (player.x < -50) {
-                            player.x = 1480;
-                        }
-                        break;
-                    case 68:
-                        player.x += speed;
-                        if (player.x > 1480) {
-                            player.x = -50;
-                        }
-                        break;
+                if (tecla_presionada.w) {
+                    player.y -= speed;
+                    if (player.y < -50) {
+                        player.y = 1480;
+                    }
+                } else if (tecla_presionada.s) {
+                    player.y += speed;
+                    if (player.y > 1480) {
+                        player.y = -50;
+                    }
+                } else if (tecla_presionada.a) {
+                    player.x -= speed;
+                    if (player.x < -50) {
+                        player.x = 1480;
+                    }
+                } else if (tecla_presionada.d) {
+                    player.x += speed;
+                    if (player.x > 1480) {
+                        player.x = -50;
+                    }
                 }
+
                 //Aumenta la velocidad al tocar el target.
                 if (player.seTocan(target)) {
                     target.x = Math.random() * (450);
@@ -184,28 +227,53 @@
                 }
                 // Topa con la colisión de la pared.
                 for (var i = walls.length - 1; i >= 0; i--) {
-                    if (player.seTocan(walls[i])) {
-                        switch (dir) {
-                            case 87:
-                                player.y += speed;
-                                break;
-                            case 83:
-                                player.y -= speed;
-                                break;
-                            case 65:
-                                player.x += speed;
-                                break;
-                            case 68:
-                                player.x -= speed;
-                                break;
-                        }
-                        dir = 0;
+                    if (tecla_presionada.w && player.seTocan(walls[i])) {
+                        player.y += speed;
+                    }
+                    if (tecla_presionada.s && player.seTocan(walls[i])) {
+                        player.y -= speed;
+                    }
+                    if (tecla_presionada.a && player.seTocan(walls[i])) {
+                        player.x += speed;
+                    }
+                    if (tecla_presionada.d && player.seTocan(walls[i])) {
+                        player.x -= speed;
                     }
                 }
+
             }
+            /*switch (dir) {
+                case 87:
+                    player.y -= speed;
+                    if (player.y < -50) {
+                        player.y = 1480;
+                    }
+                    break;
+                case 83:
+                    player.y += speed;
+                    if (player.y > 1480) {
+                        player.y = -50;
+                    }
+                    break;
+                case 65:
+                    player.x -= speed;
+                    if (player.x < -50) {
+                        player.x = 1480;
+                    }
+                    break;
+                case 68:
+                    player.x += speed;
+                    if (player.x > 1480) {
+                        player.x = -50;
+                    }
+                    break;
+            }*/
+
             repaint();
             window.requestAnimationFrame(update);
         }
+
+
 
         //ctx.fillStyle = random_rgba();
         //repaint();
@@ -214,15 +282,32 @@
             if (!pause) {
                 ctx.fillStyle = "black";
                 ctx.fillRect(0, 0, 1500, 1500);
+                switch (dir_player) {
+                    case "arriba":
+                        ctx.drawImage(image2, player.x, player.y, 50, 70);
+                        break;
+                    case "abajo":
+                        ctx.drawImage(image3, player.x, player.y, 50, 70);
+                        break;
+                    case "izquierda":
+                        ctx.drawImage(image5, player.x, player.y, 50, 70);
+                        break;
+                    case "derecha":
+                        ctx.drawImage(image4, player.x, player.y, 50, 70);
+                        break;
+                    default:
+                        ctx.drawImage(image, player.x, player.y, 50, 70);
+                        break;
+                }
                 /*
                 ctx.font = "20px Verdana";
                 ctx.fillStyle = "black";
-                ctx.fillText("SCORE: " + score, 25, 25);*/
+                ctx.fillText("SCORE: " + score, 25, 25);
 
                 //player.color = random_rgba();
 
                 player.pintarRectangulo(ctx);
-                ctx.drawImage(image, player.x, player.y, 64, 64);
+                ctx.drawImage(image, player.x, player.y, 64, 64);*/
                 //target.pintarRectangulo(ctx);
                 //ctx.drawImage(image2, target.x, target.y, 40, 40);
 
