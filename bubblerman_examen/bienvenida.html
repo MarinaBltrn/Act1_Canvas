@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido a Bubblerman</title>
+    <style>
+        /* Estilos CSS para la pantalla de bienvenida básicos, luego lo mejoro xd */
+        body {
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+        .welcome-message {
+            font-size: 24px;
+            margin-top: 50px;
+        }
+        #start-button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #0092A0;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-message">
+        <h1>Bienvenido a Bubblerman</h1>
+        <p>Presiona el botón para comenzar el juego</p>
+        <button id="start-button">Iniciar Juego</button>
+    </div>
+
+    <script>
+        // se agrega el evento para dirigir al index
+        document.getElementById('start-button').addEventListener('click', function () {
+            window.location.href = 'index.html'; 
+        });
+    </script>
+</body>
+</html>

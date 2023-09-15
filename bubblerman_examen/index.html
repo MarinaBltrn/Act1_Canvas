@@ -23,11 +23,12 @@
         var dir = 0;
         var speed = 5;
         var pause = false;
+        let score = 0;
         let walls = [];
         let pasteles = [];
         let bombasColocadas = [];
         let pastelesRecogidos = 0;
-        var tiempoEspera = 9;
+        var tiempoEspera = 2;
         var personajePuedeMoverse = false;
         var tecla_presionada = {
             w: false,
@@ -35,8 +36,6 @@
             a: false,
             d: false
         };
-        let score = 0;
-
         let objetoX, objetoY;
         let dir_player = "reposo";
 
@@ -70,7 +69,6 @@
         let comer_pastel = new Audio("musica/player_pastel.mp3");
         comer_pastel.volume = 0.3;
 
-
         // Clase para crear y pintar objetos.
         class rectangulo {
             constructor(x, y, w, h, color) {
@@ -88,7 +86,6 @@
 
             }
             // Verificar si chocan los objetos.
-
             seTocan(target) {
                 if (this.x < target.x + target.w &&
                     this.x + this.w > target.x &&
@@ -116,7 +113,7 @@
         }
 
         class generarBomba {
-            constructor(x, y, w, h, color) {
+            constructor(x, y, w, h, color, areaDeExplosion) {
                 this.x = x;
                 this.y = y;
                 this.w = w;
@@ -124,6 +121,8 @@
                 this.color = color;
                 this.vida = 2; // Tiempo de vida en segundos
                 this.explotando = false;
+                this.areaDeExplosion = areaDeExplosion;
+                this.dañadoJugador = false;
             }
 
             actualizar() {
@@ -140,7 +139,26 @@
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x, this.y, this.w, this.h);
             }
+
+            bombaExplota() {
+                if (this.explotando && !this.dañadoJugador) { // verificar que la bomba explotó sin hacerle daño al jugador.
+                    const index = bombasColocadas.indexOf(this);
+                    if (index !== -1) {
+                        bombasColocadas.splice(index, 1);
+                    }
+                    // Verificar la distancia del jugador a la bomba
+                    const distanciaJugador = Math.sqrt(Math.pow(player.x - this.x, 2) + Math.pow(player.y - this.y, 2));
+
+                    if (distanciaJugador <= this.areaDeExplosion) {
+                        // Verificar si el jugador está dentro del área de explosión
+                        score -= 10;
+                        this.dañadoJugador = true;
+                    }
+                }
+            }
         }
+
+
 
         // Generamos los pasteles manualmente en las coordenadas indicadas
         // Coordenadas en el eje X
@@ -256,8 +274,9 @@
                     break;
                 case 32:
                     if (!pause) {
-                        const bomba = new generarBomba(player.x, player.y, 40, 40, 'blue');
+                        const bomba = new generarBomba(player.x, player.y, 40, 40, 'blue', 100); // Cambia el valor 100 al tamaño de área de explosión deseado.
                         bombasColocadas.push(bomba);
+                        console.log("Bomba creada en X:", player.x, "Y:", player.y);
                     }
                     break;
                 case 80:
@@ -285,6 +304,7 @@
             }
         });
 
+        let dañoAlJugador = false;
         function update() {
             //ambiental.play(); // RECUERDA ACTIVARLO PARA LA ENTREGA
             if (tiempoEspera > 0) {
@@ -315,6 +335,8 @@
                         if (player.x > 1480) {
                             player.x = -50;
                         }
+                    } else {
+                        dir_player = "reposo";
                     }
 
                     for (let i = 0; i < pasteles.length; i++) {
@@ -326,15 +348,6 @@
                             speed += 0.3;
                         }
                     }
-                    /* Dejarlo por si lo necesito después
-                    //Aumenta la velocidad al tocar el target.
-                    if (player.seTocan(target)) {
-                        target.x = Math.random() * (450);
-                        target.y = Math.random() * (450);
-                        //speed += 0.5;
-                        score += 10;
-                        //audio.play();
-                    }*/
 
                     // Topa con la colisión de la pared.
                     for (var i = walls.length - 1; i >= 0; i--) {
@@ -354,6 +367,21 @@
 
                     for (const bomba of bombasColocadas) {
                         bomba.actualizar();
+                        bomba.bombaExplota();
+                    }
+                    if (!dañoAlJugador) {
+                        for (const bomba of bombasColocadas) {
+                            // Calcular la distancia entre el jugador y la bomba usando el teorema de Pitágoras
+                            const distanciaX = bomba.x - player.x;
+                            const distanciaY = bomba.y - player.y;
+                            const distancia = Math.sqrt(distanciaX * distanciaX + distanciaY * distanciaY);
+
+                            // Compara la distancia con el radio del área de explosión de la bomba
+                            if (distancia <= bomba.areaDeExplosion) {
+                                score -= 10;
+                                dañoAlJugador = true; // Marcar al jugador como dañado para este cuadro
+                            }
+                        }
                     }
                 }
             }
@@ -363,6 +391,7 @@
 
         function repaint() {
             if (!pause) {
+
                 ctx.fillStyle = "black";
                 ctx.fillRect(0, 0, 1500, 1500);
                 switch (dir_player) {
@@ -396,7 +425,9 @@
                 for (const bomba of bombasColocadas) {
                     bomba.dibujarBomba(ctx);
                 }
-
+                ctx.fillStyle = 'black'; // Establece el color del texto
+                ctx.font = '50px Arial'; // Establece la fuente y el tamaño del texto
+                ctx.fillText('Puntuación: ' + score, 100, 60);
             } else {
 
             }
