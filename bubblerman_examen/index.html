@@ -21,9 +21,14 @@
         var canvas = document.getElementById('my_canvas');
         var ctx = canvas.getContext('2d');
         var dir = 0;
-        var speed = 7;
+        var speed = 5;
         var pause = false;
         let walls = [];
+        let pasteles = [];
+        let bombasColocadas = [];
+        let pastelesRecogidos = 0;
+        var tiempoEspera = 9;
+        var personajePuedeMoverse = false;
         var tecla_presionada = {
             w: false,
             s: false,
@@ -31,6 +36,8 @@
             d: false
         };
         let score = 0;
+
+        let objetoX, objetoY;
         let dir_player = "reposo";
 
         let image = new Image();
@@ -48,8 +55,20 @@
         let image5 = new Image();
         image5.src = "izquierda/p_izq-copia.png";
 
-        /*let audio = new Audio();
-        audio.src = "mordisco.mp3";*/
+        let image6 = new Image();
+        image6.src = "textura_pared.png";
+
+        let imagenPastel = new Image();
+        imagenPastel.src = "pastel.png";
+
+        let ambiental = new Audio("musica/ambiental_Bubblerman.mp3");
+        ambiental.volume = 0.3;
+
+        let game_pause = new Audio("musica/player_pause.mp3");
+        game_pause.volume = 0.3;
+
+        let comer_pastel = new Audio("musica/player_pastel.mp3");
+        comer_pastel.volume = 0.3;
 
 
         // Clase para crear y pintar objetos.
@@ -64,9 +83,12 @@
             pintarRectangulo(ctx) {
                 ctx.fillStyle = this.color;
                 ctx.fillRect(this.x, this.y, this.w, this.h);
-                ctx.strokeRect(this.x, this.y, this.w, this.h);
+                //ctx.strokeRect(this.x, this.y, this.w, this.h);
+                ctx.drawImage(image6, this.x, this.y, this.w, this.h);
+
             }
             // Verificar si chocan los objetos.
+
             seTocan(target) {
                 if (this.x < target.x + target.w &&
                     this.x + this.w > target.x &&
@@ -76,6 +98,70 @@
                 }
                 return false;
             }
+        }
+
+        class pastel {
+            constructor(x, y, w, h) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.visible = true;
+            }
+            dibujar(ctx) {
+                if (this.visible) {
+                    ctx.drawImage(imagenPastel, this.x, this.y, this.w, this.h);
+                }
+            }
+        }
+
+        class generarBomba {
+            constructor(x, y, w, h, color) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.color = color;
+                this.vida = 2; // Tiempo de vida en segundos
+                this.explotando = false;
+            }
+
+            actualizar() {
+                if (!this.explotando) {
+                    this.vida -= 1 / 60; // Resta tiempo en segundos (60 cuadros por segundo)
+                    if (this.vida <= 0) {
+                        this.explotando = true;
+
+                    }
+                }
+            }
+
+            dibujarBomba(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.w, this.h);
+            }
+        }
+
+        // Generamos los pasteles manualmente en las coordenadas indicadas
+        // Coordenadas en el eje X
+        const coordenadasX = [310, 510, 710, 910, 1110, 1310];
+
+        // Coordenadas en el eje Y 
+        const coordenadaY = [110, 210, 310, 410, 510, 610, 710, 810, 910, 1010, 1110, 1210, 1310];
+
+        // Función para generar un pastel en una coordenada aleatoria
+        function generarPastelAleatorio() {
+            const coordenadaXAleatoria = coordenadasX[Math.floor(Math.random() * coordenadasX.length)];
+            const coordenadaYAleatoria = coordenadasX[Math.floor(Math.random() * coordenadasX.length)];
+            const objetoAncho = 70;
+            const objetoAlto = 70;
+
+            // Crea un pastel en la coordenada aleatoria
+            pasteles.push(new pastel(coordenadaXAleatoria, coordenadaYAleatoria, objetoAncho, objetoAlto));
+        }
+
+        for (let i = 0; i < 6; i++) {
+            generarPastelAleatorio();
         }
 
         const player = new rectangulo(110, 110, 64, 64, random_rgba());
@@ -135,6 +221,7 @@
             map_vertical += 200;
         }
 
+
         document.addEventListener('keydown', (event) => {
             console.log(event);
 
@@ -145,7 +232,6 @@
                         dir_player = "arriba";
                         tecla_presionada.w = true;
                     }
-                    //y -= 10;
                     break;
                 case 83:
                     if (!pause) {
@@ -153,7 +239,6 @@
                         dir_player = "abajo";
                         tecla_presionada.s = true;
                     }
-                    //y += 10;
                     break;
                 case 65:
                     if (!pause) {
@@ -161,7 +246,6 @@
                         dir_player = "izquierda";
                         tecla_presionada.a = true;
                     }
-                    //x -= 10;
                     break;
                 case 68:
                     if (!pause) {
@@ -169,10 +253,18 @@
                         dir_player = "derecha";
                         tecla_presionada.d = true;
                     }
-                    //x += 10;
                     break;
                 case 32:
+                    if (!pause) {
+                        const bomba = new generarBomba(player.x, player.y, 40, 40, 'blue');
+                        bombasColocadas.push(bomba);
+                    }
+                    break;
+                case 80:
                     pause = !pause;
+                    if (pause) {
+                        game_pause.play();
+                    }
                     break;
             }
         });
@@ -194,89 +286,80 @@
         });
 
         function update() {
-            if (!pause) {
-                if (tecla_presionada.w) {
-                    player.y -= speed;
-                    if (player.y < -50) {
-                        player.y = 1480;
-                    }
-                } else if (tecla_presionada.s) {
-                    player.y += speed;
-                    if (player.y > 1480) {
-                        player.y = -50;
-                    }
-                } else if (tecla_presionada.a) {
-                    player.x -= speed;
-                    if (player.x < -50) {
-                        player.x = 1480;
-                    }
-                } else if (tecla_presionada.d) {
-                    player.x += speed;
-                    if (player.x > 1480) {
-                        player.x = -50;
-                    }
-                }
-
-                //Aumenta la velocidad al tocar el target.
-                if (player.seTocan(target)) {
-                    target.x = Math.random() * (450);
-                    target.y = Math.random() * (450);
-                    //speed += 0.5;
-                    score += 10;
-                    //audio.play();
-                }
-                // Topa con la colisión de la pared.
-                for (var i = walls.length - 1; i >= 0; i--) {
-                    if (tecla_presionada.w && player.seTocan(walls[i])) {
-                        player.y += speed;
-                    }
-                    if (tecla_presionada.s && player.seTocan(walls[i])) {
-                        player.y -= speed;
-                    }
-                    if (tecla_presionada.a && player.seTocan(walls[i])) {
-                        player.x += speed;
-                    }
-                    if (tecla_presionada.d && player.seTocan(walls[i])) {
-                        player.x -= speed;
-                    }
-                }
-
+            //ambiental.play(); // RECUERDA ACTIVARLO PARA LA ENTREGA
+            if (tiempoEspera > 0) {
+                tiempoEspera -= 1 / 60; // Resta 1 segundo cada 60 cuadros por segundo
+            } else {
+                personajePuedeMoverse = true;
             }
-            /*switch (dir) {
-                case 87:
-                    player.y -= speed;
-                    if (player.y < -50) {
-                        player.y = 1480;
-                    }
-                    break;
-                case 83:
-                    player.y += speed;
-                    if (player.y > 1480) {
-                        player.y = -50;
-                    }
-                    break;
-                case 65:
-                    player.x -= speed;
-                    if (player.x < -50) {
-                        player.x = 1480;
-                    }
-                    break;
-                case 68:
-                    player.x += speed;
-                    if (player.x > 1480) {
-                        player.x = -50;
-                    }
-                    break;
-            }*/
 
+            if (personajePuedeMoverse) {
+                if (!pause) {
+                    if (tecla_presionada.w) {
+                        player.y -= speed;
+                        if (player.y < -50) {
+                            player.y = 1480;
+                        }
+                    } else if (tecla_presionada.s) {
+                        player.y += speed;
+                        if (player.y > 1480) {
+                            player.y = -50;
+                        }
+                    } else if (tecla_presionada.a) {
+                        player.x -= speed;
+                        if (player.x < -50) {
+                            player.x = 1480;
+                        }
+                    } else if (tecla_presionada.d) {
+                        player.x += speed;
+                        if (player.x > 1480) {
+                            player.x = -50;
+                        }
+                    }
+
+                    for (let i = 0; i < pasteles.length; i++) {
+                        const objeto = pasteles[i];
+                        if (objeto.visible && player.seTocan(objeto)) {
+                            objeto.visible = false;
+                            comer_pastel.play();
+                            score += 10;
+                            speed += 0.3;
+                        }
+                    }
+                    /* Dejarlo por si lo necesito después
+                    //Aumenta la velocidad al tocar el target.
+                    if (player.seTocan(target)) {
+                        target.x = Math.random() * (450);
+                        target.y = Math.random() * (450);
+                        //speed += 0.5;
+                        score += 10;
+                        //audio.play();
+                    }*/
+
+                    // Topa con la colisión de la pared.
+                    for (var i = walls.length - 1; i >= 0; i--) {
+                        if (tecla_presionada.w && player.seTocan(walls[i])) {
+                            player.y += speed;
+                        }
+                        if (tecla_presionada.s && player.seTocan(walls[i])) {
+                            player.y -= speed;
+                        }
+                        if (tecla_presionada.a && player.seTocan(walls[i])) {
+                            player.x += speed;
+                        }
+                        if (tecla_presionada.d && player.seTocan(walls[i])) {
+                            player.x -= speed;
+                        }
+                    }
+
+                    for (const bomba of bombasColocadas) {
+                        bomba.actualizar();
+                    }
+                }
+            }
             repaint();
             window.requestAnimationFrame(update);
         }
-
-
-
-        //ctx.fillStyle = random_rgba();
-        //repaint();
 
         function repaint() {
             if (!pause) {
@@ -299,32 +382,26 @@
                         ctx.drawImage(image, player.x, player.y, 50, 70);
                         break;
                 }
-                /*
-                ctx.font = "20px Verdana";
-                ctx.fillStyle = "black";
-                ctx.fillText("SCORE: " + score, 25, 25);
 
-                //player.color = random_rgba();
-
-                player.pintarRectangulo(ctx);
-                ctx.drawImage(image, player.x, player.y, 64, 64);*/
-                //target.pintarRectangulo(ctx);
-                //ctx.drawImage(image2, target.x, target.y, 40, 40);
+                for (const objeto of pasteles) {
+                    if (objeto.visible) {
+                        objeto.dibujar(ctx);
+                    }
+                }
 
                 for (var i = walls.length - 1; i >= 0; i--) {
                     walls[i].pintarRectangulo(ctx);
                 }
+
+                for (const bomba of bombasColocadas) {
+                    bomba.dibujarBomba(ctx);
+                }
+
             } else {
-                /*ctx.fillStyle = "rgba(154, 160, 154, 0.025)";
-                ctx.fillRect(0, 0, 500, 500);
-                
-                ctx.fillStyle = "black";
-                ctx.font = "30px Verdana";
-                ctx.fillText("P A U S E", 190, 240);*/
+
             }
-
         }
-
+        // Dejarlo por si necesito ver el espacio del jugador
         function random_rgba() {
             var o = Math.round, r = Math.random, s = 255;
             return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',' + r().toFixed(1) + ')';
