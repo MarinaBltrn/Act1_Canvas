@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bubblerman</title>
+    <title>Bubblerman2</title>
 
     <style>
         canvas {
-            background-color: black;
+            background-color: rgb(0, 0, 0);
         }
     </style>
 </head>
@@ -20,69 +20,83 @@
     <script>
         var canvas = document.getElementById('my_canvas');
         var ctx = canvas.getContext('2d');
+        const gridSize = 15; // Tamaño del grid (número de filas y columnas)
+        const wallSize = 100; // Tamaño de cada pared
+        const wallColor = "#0092A0"; // Color de las paredes como referencia
+        //numéricos
         var dir = 0;
-        var speed = 5;
-        var pause = false;
+        var speed = 5.5;
         let score = 0;
+        let vidas = 3;
+        let tiempoEspera = 2;
+        let tiempoEsperaBomba = 0;
+        let paredesDestruidasContador = 0;
+        // booleanos
+        var pause = false;
+        let dañoAlJugador = false;
+        var personajePuedeMoverse = false;
+        // arreglos
         let walls = [];
         let pasteles = [];
+        let enemigos = [];
         let bombasColocadas = [];
         let paredesDestructiblesArray = [];
         let pastelesRecogidos = 0;
-        var tiempoEspera = 2;
-        var tiempoEsperaBomba = 0;
-        var personajePuedeMoverse = false;
+        //teclado
         var tecla_presionada = {
             w: false,
             s: false,
             a: false,
             d: false
         };
-        let objetoX, objetoY;
-        let dir_player = "reposo";
+        //tiempo
+        n = 0;
+        x = setInterval(function () {
+            console.log(n);
 
+            n++;
+        }, 1000);
+        // Posición base del jugador
+        let dir_player = "reposo";
+        //imagenes
         let image = new Image();
         image.src = "generales/player_reposo-copia.png";
-
         let image2 = new Image();
         image2.src = "movJugador/arriba/p_arriba-copia.png";
-
         let image3 = new Image();
         image3.src = "movJugador/abajo/p_abajo-copia.png";
-
         let image4 = new Image();
         image4.src = "movJugador/derecha/p_der-copia.png";
-
         let image5 = new Image();
         image5.src = "movJugador/izquierda/p_izq-copia.png";
-
         let image6 = new Image();
         image6.src = "generales/textura_pared.png";
-
         let image7 = new Image();
         image7.src = "generales/textura_destructible.png";
-
         let imagenPastel = new Image();
         imagenPastel.src = "generales/pastel.png";
-
+        let imagenEnemigo = new Image();
+        imagenEnemigo.src = "generales/enemigo-copia.png";
         let imgBomba = new Image();
         imgBomba.src = "generales/bomba-copia.png";
 
+        //sonidos
         let ambiental = new Audio("musica/ambiental_Bubblerman.mp3");
         ambiental.volume = 0.3;
-
+        let gameOver = new Audio("musica/gameOver.mp3");
+        gameOver.volume = 0.3;
         let game_pause = new Audio("musica/player_pause.mp3");
         game_pause.volume = 0.3;
-
         let comer_pastel = new Audio("musica/player_pastel.mp3");
         comer_pastel.volume = 0.3;
-
+        let player_enemigo = new Audio("musica/player_enemigo.mp3");
+        player_enemigo.volume = 0.3;
         let player_poneBomba = new Audio("musica/player_poneBomba.mp3");
         player_poneBomba.volume = 0.3;
-
         let player_explotaBomba = new Audio("musica/player_explotaBomba.mp3");
         player_explotaBomba.volume = 0.3;
-        // Clase para crear y pintar objetos.
+
+        // Clase para crear y pintar las paredes indestructibles
         class rectangulo {
             constructor(x, y, w, h, color) {
                 this.x = x;
@@ -125,8 +139,23 @@
             }
         }
 
+        class enemigo {
+            constructor(x, y, w, h) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.visible = true;
+            }
+            dibujar(ctx) {
+                if (this.visible) {
+                    ctx.drawImage(imagenEnemigo, this.x, this.y, this.w, this.h);
+                }
+            }
+        }
+
         class generarBomba {
-            constructor(x, y, w, h, color, areaDeExplosion) {
+            constructor(x, y, w, h, color) {
                 this.x = x;
                 this.y = y;
                 this.w = w;
@@ -134,8 +163,6 @@
                 this.color = color;
                 this.vida = 2; // Tiempo de vida en segundos
                 this.explotando = false;
-                this.areaDeExplosion = areaDeExplosion;
-                this.dañadoJugador = false;
             }
 
             actualizar() {
@@ -147,31 +174,122 @@
                 }
             }
 
-            dibujarBomba(ctx) {
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.w, this.h);
-            }
-
             bombaExplota() {
-                if (this.explotando && !this.dañadoJugador) { // verificar que la bomba explotó sin hacerle daño al jugador.
+                if (this.explotando) {
                     const index = bombasColocadas.indexOf(this);
                     if (index !== -1) {
                         bombasColocadas.splice(index, 1);
                     }
-                    // Verificar la distancia del jugador a la bomba
-                    const distanciaJugador = Math.sqrt(Math.pow(player.x - this.x, 2) + Math.pow(player.y - this.y, 2));
 
-                    if (distanciaJugador <= this.areaDeExplosion) {
-                        // Verificar si el jugador está dentro del área de explosión
-                        score -= 10;
-                        this.dañadoJugador = true;
+                    // Calcular las coordenadas de la cuadrícula donde explotó la bomba
+                    const gridX = Math.floor(this.x / wallSize);
+                    const gridY = Math.floor(this.y / wallSize);
+
+                    // Iterar a través de las posiciones cercanas en el grid
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            // Ignorar la posición en las esquinas al explotar para que no explote paredes sin estar cerca.
+                            if ((i === 0 || j === 0) && !(i === 0 && j === 0)) {
+                                const explosionX = (gridX + i) * wallSize;
+                                const explosionY = (gridY + j) * wallSize;
+
+                                // Verificar si hay una pared destructible en esa posición.
+                                for (const pared of paredesDestructiblesArray) {
+                                    if (!pared.estaDestruida() && pared.x === explosionX && pared.y === explosionY) {
+                                        // Se marca la pared destructible como destruida y se aumenta el contador.
+                                        pared.destruida = true;
+                                        paredesDestruidasContador++;
+                                        score += 25;
+                                    }
+                                }
+                            }
+                        }
                     }
                     player_explotaBomba.play();
                 }
             }
+
+            posicionBloqueada(x, y) {
+                for (const wall of walls) {
+                    if (wall.seTocan({ x: x, y: y, w: this.w, h: this.h })) {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
 
-        // Generamos los pasteles manualmente en las coordenadas indicadas
+        class paredDestructible {
+            constructor(x, y, w, h) {
+                this.x = x;
+                this.y = y;
+                this.w = w;
+                this.h = h;
+                this.destruida = false;
+            }
+
+            // Agrega un método para verificar si la pared está destruida
+            estaDestruida() {
+                return this.destruida;
+            }
+
+            // Agrega un método para dibujar la pared destructible
+            dibujar(ctx) {
+                if (!this.destruida) {
+                    ctx.drawImage(image7, this.x, this.y, this.w, this.h);
+                }
+            }
+        }
+
+        const coordenadasParedesDestructibles = [
+            { x: 400, y: 100 }, { x: 500, y: 100 }, { x: 600, y: 100 }, { x: 700, y: 100 }, { x: 800, y: 100 }, { x: 900, y: 100 }, { x: 1000, y: 100 }, { x: 1100, y: 100 }, { x: 1200, y: 100 }, { x: 1300, y: 100 },
+            { x: 300, y: 200 }, { x: 500, y: 200 }, { x: 700, y: 200 }, { x: 900, y: 200 }, { x: 1100, y: 200 }, { x: 1300, y: 200 },
+            { x: 200, y: 300 }, { x: 300, y: 300 }, { x: 400, y: 300 }, { x: 500, y: 300 }, { x: 600, y: 300 }, { x: 700, y: 300 }, { x: 800, y: 300 }, { x: 900, y: 300 }, { x: 1000, y: 300 }, { x: 1100, y: 300 }, { x: 1200, y: 300 }, { x: 1300, y: 300 },
+            { x: 100, y: 400 }, { x: 300, y: 400 }, { x: 500, y: 400 }, { x: 700, y: 400 }, { x: 900, y: 400 }, { x: 1100, y: 400 }, { x: 1300, y: 400 },
+            { x: 100, y: 500 }, { x: 200, y: 500 }, { x: 300, y: 500 }, { x: 400, y: 500 }, { x: 500, y: 500 }, { x: 600, y: 500 }, { x: 700, y: 500 }, { x: 800, y: 500 }, { x: 900, y: 500 }, { x: 1000, y: 500 }, { x: 1100, y: 500 }, { x: 1200, y: 500 }, { x: 1300, y: 500 },
+            { x: 100, y: 600 }, { x: 300, y: 600 }, { x: 500, y: 600 }, { x: 700, y: 600 }, { x: 900, y: 600 }, { x: 1100, y: 600 }, { x: 1300, y: 600 },
+            { x: 100, y: 700 }, { x: 200, y: 700 }, { x: 300, y: 700 }, { x: 400, y: 700 }, { x: 500, y: 700 }, { x: 600, y: 700 }, { x: 700, y: 700 }, { x: 800, y: 700 }, { x: 900, y: 700 }, { x: 1000, y: 700 }, { x: 1100, y: 700 }, { x: 1200, y: 700 }, { x: 1300, y: 700 },
+            { x: 100, y: 800 }, { x: 300, y: 800 }, { x: 500, y: 800 }, { x: 700, y: 800 }, { x: 900, y: 800 }, { x: 1100, y: 800 }, { x: 1300, y: 800 },
+            { x: 100, y: 900 }, { x: 200, y: 900 }, { x: 300, y: 900 }, { x: 400, y: 900 }, { x: 500, y: 900 }, { x: 600, y: 900 }, { x: 700, y: 900 }, { x: 800, y: 900 }, { x: 900, y: 900 }, { x: 1000, y: 900 }, { x: 1100, y: 900 }, { x: 1200, y: 900 }, { x: 1300, y: 900 },
+            { x: 100, y: 1000 }, { x: 300, y: 1000 }, { x: 500, y: 1000 }, { x: 700, y: 1000 }, { x: 900, y: 1000 }, { x: 1100, y: 1000 }, { x: 1300, y: 1000 },
+            { x: 100, y: 1100 }, { x: 200, y: 1100 }, { x: 300, y: 1100 }, { x: 400, y: 1100 }, { x: 500, y: 1100 }, { x: 600, y: 1100 }, { x: 700, y: 1100 }, { x: 800, y: 1100 }, { x: 900, y: 1100 }, { x: 1000, y: 1100 }, { x: 1100, y: 1100 }, { x: 1200, y: 1100 }, { x: 1300, y: 1100 },
+            { x: 100, y: 1200 }, { x: 300, y: 1200 }, { x: 500, y: 1200 }, { x: 700, y: 1200 }, { x: 900, y: 1200 }, { x: 1100, y: 1200 }, { x: 1300, y: 1200 },
+            { x: 100, y: 1300 }, { x: 200, y: 1300 }, { x: 300, y: 1300 }, { x: 400, y: 1300 }, { x: 500, y: 1300 }, { x: 600, y: 1300 }, { x: 700, y: 1300 }, { x: 800, y: 1300 }, { x: 900, y: 1300 }, { x: 1000, y: 1300 }, { x: 1100, y: 1300 }, { x: 1200, y: 1300 }, { x: 1300, y: 1300 },
+
+            // esto es triste pero la cabeza no me da para más en estos momentos ... 
+        ];
+
+
+        // Función para generar un número específico de coordenadas aleatorias de paredes destructibles
+        function generarCoordenadasAleatorias(cantidad) {
+            const coordenadasAleatorias = [];
+            while (coordenadasAleatorias.length < cantidad) {
+                const coordenadaAleatoria = coordenadasParedesDestructibles[Math.floor(Math.random() * coordenadasParedesDestructibles.length)];
+                coordenadasAleatorias.push(coordenadaAleatoria);
+            }
+            return coordenadasAleatorias;
+        }
+        // cantidad de coordenadas aleatorias que tomará para las paredes.
+        const cantidadCoordenadasAleatorias = Math.floor(Math.random() * (61 - 50) + 50); // Cambia esto al número deseado
+        //const cantidadCoordenadasAleatorias = 3; // Esto nomas es para que acabe mas rápido
+
+        // Se llama la función para generar las coordenadas aleatorias
+        const coordenadasParedesDestructiblesAleatorias = generarCoordenadasAleatorias(cantidadCoordenadasAleatorias);
+
+        // Función para generar las paredes destructibles basadas en coordenadas aleatorias
+        function generarParedesDestructiblesAleatorias() {
+            for (const coordenada of coordenadasParedesDestructiblesAleatorias) {
+                const x = coordenada.x;
+                const y = coordenada.y;
+                const pared = new paredDestructible(x, y, wallSize, wallSize);
+                paredesDestructiblesArray.push(pared);
+            }
+        }
+
+        // Se llama a la función para generar las paredes destructibles aleatorias
+        generarParedesDestructiblesAleatorias();
+
+        // Generamos los pasteles manualmente en las coordenadas indicadas.
         // Coordenadas en el eje X
         const coordenadasX = [310, 510, 710, 910, 1110, 1310];
 
@@ -185,73 +303,76 @@
             const objetoAncho = 70;
             const objetoAlto = 70;
 
-            // Crea un pastel en la coordenada aleatoria
+            // Crear un pastel en la coordenada aleatoria
             pasteles.push(new pastel(coordenadaXAleatoria, coordenadaYAleatoria, objetoAncho, objetoAlto));
         }
 
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 8; i++) { // Si quiere más pasteles nomas cambiele el 8 :)
             generarPastelAleatorio();
         }
 
+        const coordX = [310, 510, 710, 910, 1110, 1310];
+
+        // Coordenadas en el eje Y 
+        const coordY = [110, 210, 310, 410, 510, 610, 710, 810, 910, 1010, 1110, 1210, 1310];
+
+        // Función para generar un enemigo en una coordenada aleatoria
+        function generarenEmigoAleatorio() {
+            const coordXAleatoria = coordenadasX[Math.floor(Math.random() * coordenadasX.length)];
+            const coordYAleatoria = coordenadasX[Math.floor(Math.random() * coordenadasX.length)];
+            const enemigoAncho = 70;
+            const enemigoAlto = 70;
+
+            // Crear un enemigo en la coordenada aleatoria
+            enemigos.push(new enemigo(coordXAleatoria, coordYAleatoria, enemigoAncho, enemigoAlto));
+        }
+
+        for (let i = 0; i < 15; i++) {
+            generarenEmigoAleatorio();
+        }
+
         const player = new rectangulo(120, 120, 64, 64, random_rgba());
-        const target = new rectangulo(420, 380, 40, 40, "black"); // huesoooo
+        const target = new rectangulo(420, 380, 40, 40, "black");
 
-        // Aqui se dibujan las paredes que no son destructibles, el marco y demas.
-        let aum_lateral = 0;
-        let aum_inferior = 1400;
-        let aum_superior = 0;
-        for (let x = 0; x <= 30; x++) {
-            walls.push(new rectangulo(aum_lateral, aum_superior, 100, 100, "#0092A0"));
-            walls.push(new rectangulo(aum_lateral, aum_inferior, 100, 100, "#0092A0"));
-            aum_lateral += 100;
-            x++;
-        }
-
-        let aum_izq = 0;
-        let aum_der = 1400;
-        let aum_vertical = 0;
-        for (let y = 0; y <= 28; y++) {
-            walls.push(new rectangulo(aum_izq, aum_vertical, 100, 100, "#0092A0"));
-            walls.push(new rectangulo(aum_der, aum_vertical, 100, 100, "#0092A0"));
-            aum_vertical += 100;
-            y++;
-        }
-
-        let map_lateral = 200;
-        let map_vertical = 200;
-
-        for (let i = 0; i <= 5; i++) {
-            for (let j = 0; j <= 5; j++) {
-                if (j % 2 == 0) {
-                    walls.push(new rectangulo(map_lateral, map_vertical, 100, 100, "#0092A0"));
-                    map_lateral += 200;
-                } else {
-                    walls.push(new rectangulo(map_lateral, map_vertical, 100, 100, "#0092A0"));
-                    map_lateral += 200;
+        // Función para crear un grid de paredes
+        function paredDelGrid() {
+            // Paredes horizontales superiores e inferiores
+            for (let col = 0; col < gridSize; col++) {
+                const x = col * wallSize;
+                const yTop = 0;
+                const yBottom = (gridSize - 1) * wallSize;
+                walls.push(new rectangulo(x, yTop, wallSize, wallSize, wallColor));
+                walls.push(new rectangulo(x, yBottom, wallSize, wallSize, wallColor));
+            }
+            // Paredes verticales izquierda y derecha
+            for (let row = 1; row < gridSize - 1; row++) {
+                const xLeft = 0;
+                const xRight = (gridSize - 1) * wallSize;
+                const y = row * wallSize;
+                walls.push(new rectangulo(xLeft, y, wallSize, wallSize, wallColor));
+                walls.push(new rectangulo(xRight, y, wallSize, wallSize, wallColor));
+            }
+            // Patron central del grid
+            for (let row = 2; row < gridSize - 2; row += 2) {
+                for (let col = 2; col < gridSize - 2; col += 2) {
+                    const x = col * wallSize;
+                    const y = row * wallSize;
+                    walls.push(new rectangulo(x, y, wallSize, wallSize, wallColor));
                 }
             }
-            switch (i) {
-                case 0:
-                    map_vertical = 200;
-                    break;
-                case 1:
-                    map_vertical = 400;
-                    break;
-                case 2:
-                    map_vertical = 600;
-                    break;
-                case 3:
-                    map_vertical = 800;
-                    break;
-                case 4:
-                    map_vertical = 1000;
-                    break;
-            }
-            map_lateral = 200;
-            map_vertical += 200;
         }
 
-        
+        paredDelGrid();
+        //Colision de la pared destructible
+        function colisionConParedDestructible(x, y) {
+            for (const pared of paredesDestructiblesArray) {
+                if (!pared.estaDestruida() && pared.x < x + player.w && x < pared.x + pared.w && pared.y < y + player.h && y < pared.y + pared.h) {
+                    return true; // Hay colisión con una pared destructible no destruida
+                }
+            }
+            return false; // No hay colisión con pared destructible
+        }
+
         document.addEventListener('keydown', (event) => {
             console.log(event);
 
@@ -287,13 +408,17 @@
                 case 32:
                     if (!pause) {
                         if (tiempoEsperaBomba <= 0) {
-                            const bomba = new generarBomba(player.x + 10, player.y + 20, 40, 40, 'blue', 100); // Cambia el valor 100 al tamaño de área de explosión deseado.
+                            // Calcula las coordenadas de la cuadrícula en la que se encuentra el jugador
+                            const gridX = Math.floor(player.x / wallSize) * wallSize;
+                            const gridY = Math.floor(player.y / wallSize) * wallSize;
+
+                            // Coloca la bomba en la cuadrícula actual del jugador
+                            const bomba = new generarBomba(gridX + 20, gridY + 20, 40, 40, 'blue', 100);
                             bombasColocadas.push(bomba);
                             player_poneBomba.play();
-                            console.log("Bomba creada en X:", player.x, "Y:", player.y);
+                            console.log("Bomba creada en X:", gridX, "Y:", gridY);
                             tiempoEsperaBomba = 80;
                         }
-
                     }
                     break;
                 case 80:
@@ -304,6 +429,7 @@
                     break;
             }
         });
+        // Este nomas lo agregue para el movimiento del jugador.
         document.addEventListener('keyup', (event) => {
             switch (event.keyCode) {
                 case 87:
@@ -321,9 +447,8 @@
             }
         });
 
-        let dañoAlJugador = false;
         function update() {
-            //ambiental.play(); // RECUERDA ACTIVARLO PARA LA ENTREGA
+            ambiental.play(); // Rolita ambiental :)
             if (tiempoEspera > 0) {
                 tiempoEspera -= 1 / 60; // Resta 1 segundo cada 60 cuadros por segundo
             } else {
@@ -335,42 +460,57 @@
             }
 
             if (personajePuedeMoverse) {
-                if (!pause) {
+                if (!pause && personajePuedeMoverse) {
                     if (tecla_presionada.w) {
-                        player.y -= speed;
-                        if (player.y < -50) {
-                            player.y = 1480;
+                        const nuevaY = player.y - speed;
+                        if (!colisionConParedDestructible(player.x, nuevaY)) {
+                            player.y = nuevaY;
+                            dir_player = "arriba";
                         }
                     } else if (tecla_presionada.s) {
-                        player.y += speed;
-                        if (player.y > 1480) {
-                            player.y = -50;
+                        const nuevaY = player.y + speed;
+                        if (!colisionConParedDestructible(player.x, nuevaY)) {
+                            player.y = nuevaY;
+                            dir_player = "abajo";
                         }
                     } else if (tecla_presionada.a) {
-                        player.x -= speed;
-                        if (player.x < -50) {
-                            player.x = 1480;
+                        const nuevaX = player.x - speed;
+                        if (!colisionConParedDestructible(nuevaX, player.y)) {
+                            player.x = nuevaX;
+                            dir_player = "izquierda";
                         }
                     } else if (tecla_presionada.d) {
-                        player.x += speed;
-                        if (player.x > 1480) {
-                            player.x = -50;
+                        const nuevaX = player.x + speed;
+                        if (!colisionConParedDestructible(nuevaX, player.y)) {
+                            player.x = nuevaX;
+                            dir_player = "derecha";
                         }
                     } else {
                         dir_player = "reposo";
                     }
 
+                    //For de accion de los pasteles (player toca pastel).
                     for (let i = 0; i < pasteles.length; i++) {
                         const objeto = pasteles[i];
                         if (objeto.visible && player.seTocan(objeto)) {
                             objeto.visible = false;
                             comer_pastel.play();
-                            score += 10;
-                            speed += 0.3;
+                            score += 75;
+                            speed += 0.4;
+                        }
+                    }
+                    //For de accion de los enemigos (player toca enemigo).
+                    for (let i = 0; i < enemigos.length; i++) {
+                        const enem = enemigos[i];
+                        if (enem.visible && player.seTocan(enem)) {
+                            enem.visible = false;
+                            player_enemigo.play();
+                            score -= 75;
+                            vidas -= 1;
                         }
                     }
 
-                    // Topa con la colisión de la pared indestructible
+                    // Player topa con la colisión de la pared indestructible
                     for (var i = walls.length - 1; i >= 0; i--) {
                         if (tecla_presionada.w && player.seTocan(walls[i])) {
                             player.y += speed;
@@ -390,20 +530,6 @@
                         bomba.actualizar();
                         bomba.bombaExplota();
                     }
-                    if (!dañoAlJugador) {
-                        for (const bomba of bombasColocadas) {
-                            // Calcular la distancia entre el jugador y la bomba usando el teorema de Pitágoras
-                            const distanciaX = bomba.x - player.x;
-                            const distanciaY = bomba.y - player.y;
-                            const distancia = Math.sqrt(distanciaX * distanciaX + distanciaY * distanciaY);
-
-                            // Compara la distancia con el radio del área de explosión de la bomba
-                            if (distancia <= bomba.areaDeExplosion) {
-                                score -= 10;
-                                dañoAlJugador = true; // Marcar al jugador como dañado para este cuadro
-                            }
-                        }
-                    }
                 }
             }
             repaint();
@@ -411,48 +537,94 @@
         }
 
         function repaint() {
-            if (!pause) {
-
-                ctx.fillStyle = "black";
+            if (paredesDestruidasContador >= paredesDestructiblesArray.length) { // Pa cuando ganas despues de destruir todas las paredes destruibles en el mapa.
+                clearInterval(x);
+                ctx.fillStyle = "rgba(154, 160, 154, 0.025)";
                 ctx.fillRect(0, 0, 1500, 1500);
-                switch (dir_player) {
-                    case "arriba":
-                        ctx.drawImage(image2, player.x, player.y, 50, 70);
-                        break;
-                    case "abajo":
-                        ctx.drawImage(image3, player.x, player.y, 50, 70);
-                        break;
-                    case "izquierda":
-                        ctx.drawImage(image5, player.x, player.y, 50, 70);
-                        break;
-                    case "derecha":
-                        ctx.drawImage(image4, player.x, player.y, 50, 70);
-                        break;
-                    default:
-                        ctx.drawImage(image, player.x, player.y, 50, 70);
-                        break;
-                }
-
-                for (const objeto of pasteles) {
-                    if (objeto.visible) {
-                        objeto.dibujar(ctx);
-                    }
-                }
-
-                for (var i = walls.length - 1; i >= 0; i--) {
-                    walls[i].pintarRectangulo(ctx);
-                }
-
-
-                for (const bomba of bombasColocadas) {
-                    bomba.dibujarBomba(ctx);
-                    ctx.drawImage(imgBomba, bomba.x - 10, bomba.y - 10, 60, 60);
-                }
-                ctx.fillStyle = 'black'; // Establece el color del texto
-                ctx.font = '50px Arial'; // Establece la fuente y el tamaño del texto
-                ctx.fillText('Puntuación: ' + score, 100, 60);
+                ctx.fillStyle = 'black';
+                ctx.font = "Bold 80px Verdana";
+                ctx.fillText("¡GANASTE!", 560, 725);
+                ctx.font = "Bold 50px Verdana";
+                ctx.fillText("Hiciste: " + score + " puntos.", 535, 825);
+                ctx.fillText("En un tiempo de: " + n + " segundos.", 420, 900);
             } else {
+                if (vidas >= 0) { // Pa cuando sigues jugando en base a las vidas que tienes.
+                    if (!pause) {
+                        ctx.fillStyle = 'black';
+                        ctx.fillRect(0, 0, 1500, 1500);
+                        switch (dir_player) { // Ya no puedo jefe, nomas le puse una imagen para cada dirección :(
+                            case "arriba":
+                                ctx.drawImage(image2, player.x, player.y, 50, 70);
+                                break;
+                            case "abajo":
+                                ctx.drawImage(image3, player.x, player.y, 50, 70);
+                                break;
+                            case "izquierda":
+                                ctx.drawImage(image5, player.x, player.y, 50, 70);
+                                break;
+                            case "derecha":
+                                ctx.drawImage(image4, player.x, player.y, 50, 70);
+                                break;
+                            default:
+                                ctx.drawImage(image, player.x, player.y, 50, 70);
+                                break;
+                        }
 
+                        //Acá abajo se dibujan la mayoria de los objetos.
+                        for (const objeto of pasteles) {
+                            if (objeto.visible) {
+                                objeto.dibujar(ctx);
+                            }
+                        }
+
+                        for (const enemigo_a of enemigos) {
+                            if (enemigo_a.visible) {
+                                enemigo_a.dibujar(ctx);
+                            }
+                        }
+
+                        for (var i = walls.length - 1; i >= 0; i--) {
+                            walls[i].pintarRectangulo(ctx);
+                        }
+
+                        for (const bomba of bombasColocadas) {
+                            // Dibujar la bomba
+                            ctx.drawImage(imgBomba, bomba.x - 10, bomba.y - 5, 80, 80);
+
+                        }
+
+                        for (const pared of paredesDestructiblesArray) {
+                            pared.dibujar(ctx);
+                        }
+                        // Textos del apartado superior del juego.
+                        ctx.fillStyle = 'black'; 
+                        ctx.font = 'Bold 50px Verdana'; 
+                        ctx.fillText('Puntuación: ' + score, 100, 60);
+                        ctx.fillText('Vidas: ' + vidas, 640, 60);
+                        ctx.fillText("Tiempo: " + n + " seg", 1000, 60);
+                    } else {
+                        // Texto del pause.
+                        ctx.fillStyle = "rgba(154, 160, 154, 0.025)";
+                        ctx.fillRect(0, 0, 1500, 1500);
+
+                        ctx.fillStyle = "black";
+                        ctx.font = "Bold 80px Verdana"
+                        ctx.fillText("P A U S E", 600, 725);
+                    }
+                } else { // Texto y acciones al perder las vidas.
+                    clearInterval(x);
+                    ambiental.pause();
+                    gameOver.play();
+                    ctx.fillStyle = "rgba(154, 160, 154, 0.025)";
+                    ctx.fillRect(0, 0, 1500, 1500);
+
+                    ctx.fillStyle = "black";
+                    ctx.font = "Bold 80px Verdana";
+                    ctx.fillText("G A M E  O V E R", 450, 725);
+                    ctx.font = "Bold 50px Verdana"
+                    ctx.fillText("Hiciste: " + score + " puntos.", 535, 825);
+                    ctx.fillText("En un tiempo de: " + n + " segundos.", 420, 900);
+                }
             }
         }
         // Dejarlo por si necesito ver el espacio del jugador
@@ -471,18 +643,6 @@
         }());
 
         window.requestAnimationFrame(update);
-
-        /*const coordenadas = [
-        [310, 110], [410, 110], [510, 110], [610, 110], [710, 110], [810, 110], [910, 110],
-        [1010, 110], [1110, 110], [1210, 110]
-    
-        
-        [1310, 110], [210, 210], [410, 210], [610, 210],
-        [810, 210], [1010, 210], [1210, 210], [1410, 210], [210, 310], [310, 310], [410, 310],
-        [510, 310], [610, 310], [710, 310], [810, 310], [910, 310], [1010, 310], [1110, 310],
-        [1210, 310], [1310, 310], [1410, 310]
-        
-        ];*/
     </script>
 </body>
 
