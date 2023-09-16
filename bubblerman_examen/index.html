@@ -27,8 +27,10 @@
         let walls = [];
         let pasteles = [];
         let bombasColocadas = [];
+        let paredesDestructiblesArray = [];
         let pastelesRecogidos = 0;
         var tiempoEspera = 2;
+        var tiempoEsperaBomba = 0;
         var personajePuedeMoverse = false;
         var tecla_presionada = {
             w: false,
@@ -40,25 +42,31 @@
         let dir_player = "reposo";
 
         let image = new Image();
-        image.src = "player_reposo-copia.png";
+        image.src = "generales/player_reposo-copia.png";
 
         let image2 = new Image();
-        image2.src = "arriba/p_arriba-copia.png";
+        image2.src = "movJugador/arriba/p_arriba-copia.png";
 
         let image3 = new Image();
-        image3.src = "abajo/p_abajo-copia.png";
+        image3.src = "movJugador/abajo/p_abajo-copia.png";
 
         let image4 = new Image();
-        image4.src = "derecha/p_der-copia.png";
+        image4.src = "movJugador/derecha/p_der-copia.png";
 
         let image5 = new Image();
-        image5.src = "izquierda/p_izq-copia.png";
+        image5.src = "movJugador/izquierda/p_izq-copia.png";
 
         let image6 = new Image();
-        image6.src = "textura_pared.png";
+        image6.src = "generales/textura_pared.png";
+
+        let image7 = new Image();
+        image7.src = "generales/textura_destructible.png";
 
         let imagenPastel = new Image();
-        imagenPastel.src = "pastel.png";
+        imagenPastel.src = "generales/pastel.png";
+
+        let imgBomba = new Image();
+        imgBomba.src = "generales/bomba-copia.png";
 
         let ambiental = new Audio("musica/ambiental_Bubblerman.mp3");
         ambiental.volume = 0.3;
@@ -69,6 +77,11 @@
         let comer_pastel = new Audio("musica/player_pastel.mp3");
         comer_pastel.volume = 0.3;
 
+        let player_poneBomba = new Audio("musica/player_poneBomba.mp3");
+        player_poneBomba.volume = 0.3;
+
+        let player_explotaBomba = new Audio("musica/player_explotaBomba.mp3");
+        player_explotaBomba.volume = 0.3;
         // Clase para crear y pintar objetos.
         class rectangulo {
             constructor(x, y, w, h, color) {
@@ -130,7 +143,6 @@
                     this.vida -= 1 / 60; // Resta tiempo en segundos (60 cuadros por segundo)
                     if (this.vida <= 0) {
                         this.explotando = true;
-
                     }
                 }
             }
@@ -154,11 +166,10 @@
                         score -= 10;
                         this.dañadoJugador = true;
                     }
+                    player_explotaBomba.play();
                 }
             }
         }
-
-
 
         // Generamos los pasteles manualmente en las coordenadas indicadas
         // Coordenadas en el eje X
@@ -182,9 +193,10 @@
             generarPastelAleatorio();
         }
 
-        const player = new rectangulo(110, 110, 64, 64, random_rgba());
+        const player = new rectangulo(120, 120, 64, 64, random_rgba());
         const target = new rectangulo(420, 380, 40, 40, "black"); // huesoooo
 
+        // Aqui se dibujan las paredes que no son destructibles, el marco y demas.
         let aum_lateral = 0;
         let aum_inferior = 1400;
         let aum_superior = 0;
@@ -239,7 +251,7 @@
             map_vertical += 200;
         }
 
-
+        
         document.addEventListener('keydown', (event) => {
             console.log(event);
 
@@ -274,9 +286,14 @@
                     break;
                 case 32:
                     if (!pause) {
-                        const bomba = new generarBomba(player.x, player.y, 40, 40, 'blue', 100); // Cambia el valor 100 al tamaño de área de explosión deseado.
-                        bombasColocadas.push(bomba);
-                        console.log("Bomba creada en X:", player.x, "Y:", player.y);
+                        if (tiempoEsperaBomba <= 0) {
+                            const bomba = new generarBomba(player.x + 10, player.y + 20, 40, 40, 'blue', 100); // Cambia el valor 100 al tamaño de área de explosión deseado.
+                            bombasColocadas.push(bomba);
+                            player_poneBomba.play();
+                            console.log("Bomba creada en X:", player.x, "Y:", player.y);
+                            tiempoEsperaBomba = 80;
+                        }
+
                     }
                     break;
                 case 80:
@@ -311,6 +328,10 @@
                 tiempoEspera -= 1 / 60; // Resta 1 segundo cada 60 cuadros por segundo
             } else {
                 personajePuedeMoverse = true;
+            }
+
+            if (tiempoEsperaBomba > 0) {
+                tiempoEsperaBomba -= 1;
             }
 
             if (personajePuedeMoverse) {
@@ -349,7 +370,7 @@
                         }
                     }
 
-                    // Topa con la colisión de la pared.
+                    // Topa con la colisión de la pared indestructible
                     for (var i = walls.length - 1; i >= 0; i--) {
                         if (tecla_presionada.w && player.seTocan(walls[i])) {
                             player.y += speed;
@@ -422,8 +443,10 @@
                     walls[i].pintarRectangulo(ctx);
                 }
 
+
                 for (const bomba of bombasColocadas) {
                     bomba.dibujarBomba(ctx);
+                    ctx.drawImage(imgBomba, bomba.x - 10, bomba.y - 10, 60, 60);
                 }
                 ctx.fillStyle = 'black'; // Establece el color del texto
                 ctx.font = '50px Arial'; // Establece la fuente y el tamaño del texto
@@ -449,6 +472,17 @@
 
         window.requestAnimationFrame(update);
 
+        /*const coordenadas = [
+        [310, 110], [410, 110], [510, 110], [610, 110], [710, 110], [810, 110], [910, 110],
+        [1010, 110], [1110, 110], [1210, 110]
+    
+        
+        [1310, 110], [210, 210], [410, 210], [610, 210],
+        [810, 210], [1010, 210], [1210, 210], [1410, 210], [210, 310], [310, 310], [410, 310],
+        [510, 310], [610, 310], [710, 310], [810, 310], [910, 310], [1010, 310], [1110, 310],
+        [1210, 310], [1310, 310], [1410, 310]
+        
+        ];*/
     </script>
 </body>
 
