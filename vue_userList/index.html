@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>user_list</title>
+    <style type="text/css">
+        body {
+            background-color: gray;
+        }
+
+        table.customTable {
+            width: 100%;
+            background-color: #FFFFFF;
+            border-collapse: collapse;
+            border-width: 2px;
+            border-color: #936BFF;
+            border-style: solid;
+            color: #000000;
+        }
+
+        table.customTable td,
+        table.customTable th {
+            border-width: 2px;
+            border-color: #936BFF;
+            border-style: solid;
+            padding: 5px;
+        }
+
+        table.customTable thead {
+            background-color: #936BFF;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container_app">
+        <form v-if="!is_login">
+            <fieldset>
+                <legend>
+                    Email:
+                </legend>
+                <input v-model="email" type="email" placeholder="write here" name="">
+            </fieldset>
+
+            <fieldset>
+                <legend>
+                    Password:
+                </legend>
+                <input v-model="password" value="1234" type="password" placeholder="write here" name="">
+            </fieldset>
+
+            <button @click="login" type="button">
+                Access
+            </button>
+        </form>
+        <table class="customTable" v-if="is_login">
+            <thead>
+                <tr>
+                    <th>Personal Data</th>
+                    <th>Contact Data</th>
+                    <th>Company Data</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="u in users">
+                    <td>{{ u.name }}, {{ u.username }}</td>
+                    <td>{{ u.email }}, {{ u.phone }}</td>
+                    <td>{{ u.company.name }}, {{ u.bs }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                users = ref([]);
+                email = ref('Sincere@april.biz');
+                password = ref('1234');
+
+
+                let tmp = localStorage.getItem("is_login");
+                if (tmp == null) {
+                    tmp = false;
+                }
+
+                is_login = ref(tmp);
+
+                return {
+                    users,
+                    email,
+                    password,
+                    is_login
+                }
+            },
+            mounted: function () {
+                const getUsers = async () => {
+                    const response = await fetch("users.json?v=1");
+                    const tmp_users = await response.json();
+                    this.users = tmp_users;
+                }
+                if (this.is_login) {
+                    getUsers();
+                }
+
+            },
+            methods: {
+                async login() {
+                    //1.- Traer los datos.
+                    const response = await fetch("users.json?v=1");
+                    this.users = await response.json();
+
+                    this.is_login = false;
+
+                    //2.- Recorrer los datos.
+                    this.users.forEach((user) => {
+
+                        //3.- Comprobar si el usuario existe.
+                        if (this.email == user.email) {
+                            if (this.password == user.password) {
+                                this.is_login = true;
+                                alert("Bienvenido");
+
+                                //this.update(users);
+                                localStorage.setItem("user_data", JSON.stringify(user));
+                                localStorage.setItem("is_login", "true");
+                            }
+                        }
+                    }
+                    );
+                    if (!this.is_login) {
+                        alert("Verifique su información");
+                    }
+                },
+                update(users) {
+                    this.users = users;
+                }
+            }
+        }).mount('#container_app')
+    </script>
+</body>
+
+</html>
