@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Primera practica VUE</title>
+    <style>
+        body {
+            background-color: rgb(221, 161, 133);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!-- <h1> Buenas días {{ name }} </h1>
+
+        <input type="text" v-model="name" name="">
+
+        <br><br>
+
+        <button @click="count++">
+            Count is: {{ count }}
+        </button>
+
+        <br><br>
+
+        <input type="" v-model="numero1"> <br>
+        <input type="" v-model="numero2"> <br>
+        <br>
+
+        <button @click="result=((+numero1)+(+numero2))">
+            Suma
+        </button>
+
+        <h3>Resultado: <span v-if="result!=0"> {{ result }}</span> </h3><br> -->
+
+        <form>
+            <!-- <hr>
+            <li v-for="item in persons">
+                {{item.nombre}} - {{item.Apellido}}
+            </li> -->
+
+            </hr>
+
+            <fieldset>
+                <legend>
+                    Email
+                </legend>
+                <input type="text" v-model="email" name="">
+                <legend>
+                    Contraseña
+                </legend>
+                <input type="text" v-model="password" name="">
+                <br>
+            </fieldset>
+            <br>
+            <button type="button" @click="login">Iniciar Sesión</button>
+
+        </form>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="text/javascript">
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                
+                const users = ref([]);
+                const email = ref("");
+                const password = ref("");
+
+                return {
+                    users,
+                    email,
+                    password
+                }
+            },
+            methods: {
+                async login(){
+                    const response = await fetch("http://127.0.0.1:5500/user.json");
+                    const user_r = await response.json();
+                    let login = false;
+                    user_r.forEach(element => {
+                        if(this.email == element.email){
+                            if(this.password == element.password){
+                                alert("Buenas buenas ")
+                                login = true;
+                            }
+                        }
+                        
+                    });
+
+                }
+            }
+        }).mount('#container')
+    </script>
+</body>
+
+</html>
