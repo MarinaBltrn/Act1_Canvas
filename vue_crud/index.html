@@ -202,7 +202,7 @@
                     this.action = 'edit';
                     this.new_user.name = target.name;
                     this.new_user.email = target.email;
-                    this.new_user.company_name = target.company.name;
+                    this.new_user.company_name = target.company_name;
                     this.new_user.id = target.id;
                 },
                 save(action) {
@@ -225,7 +225,7 @@
                             if (user.id == this.new_user.id) {
                                 user.name = this.new_user.name;
                                 user.email = this.new_user.email;
-                                user.company_name = this.new_user.company_name;
+                                user.company.name = this.new_user.company_name;
                                 alert("Registro actualizado correctamente");
                             }
                         })
