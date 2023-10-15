@@ -1,0 +1,39 @@
+@mainColor: #1e8f8d; //#D08EF5
+@textColor: #b0f5db; //#57F045
+@colorsArray: #70D6FF, #FF70A6, #FF9770, #FFD670, #E9FF70; //#0275d8, #5cb85c, #5bc0de, #f0ad4e, #d9534f
+
+.example(@bg: red) {
+    background-color: @bg;
+}
+
+.color-list(@items; @i: 1) when (@i =< @items) {
+    .item-@{i} {
+        background-color: extract(@colorsArray, @i);
+        border-style: dotted;
+        border-width: 1px;
+    }
+    .color-list(@items, (@i + 1));
+}
+
+body {
+    background: white;
+    .container {
+        width: 70%;
+        margin: auto;
+        form {
+            background-color: @mainColor;
+            border-radius: 5px;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            padding: 20px;
+            legend {
+                color: @textColor;
+                .example(#1e8f8d); //#D08EF5
+            }
+            fieldset {
+                ul {
+                    .color-list(5);
+                }
+            }
+        }
+    }
+}
